@@ -43,8 +43,10 @@ SERVICES="$(dc config --services 2>/dev/null | tr '\n' ' ')"
 has_service() { printf ' %s ' "$SERVICES" | grep -q " $1 "; }
 
 # --- 1. Long-running services up -------------------------------------------------------------
-# volume-init, web-init, install and restore are one-shot by design and are *expected* to be exited.
-LONG_RUNNING="db php-fpm-app web ws consumer cron"
+# volume-init, web-init, install, restore AND application are one-shot by design and are *expected*
+# to be exited. `application` runs `true` and depends on web+consumer+cron — the dependency graph is
+# what starts the stack, so its Exited status is correct, not a failure. See specs/00-environment-spec.md §3b.
+LONG_RUNNING="db php-fpm-app web ws consumer cron mail"
 DOWN=""
 for s in $LONG_RUNNING; do
   has_service "$s" || continue
