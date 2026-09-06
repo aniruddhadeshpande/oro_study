@@ -1,0 +1,10 @@
+# capture.sh  phase=2  task=remote-refs  utc=2026-09-06T12:16:30Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: git ls-remote --heads --tags https://github.com/oroinc/docker-demo
+
+685318e06a20b94622e99e5df3ddbbb1d2c0f616	refs/heads/5.0
+a790d44727fb25411687199dca89f4864e793fdf	refs/heads/5.1
+9569198d03f324731af2906d72692bb02d588676	refs/heads/6.0
+202a279343e62ee99b8cc81f78c307a79958f80d	refs/heads/master
+
+# exit_code=0

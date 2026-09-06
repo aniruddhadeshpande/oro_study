@@ -1,0 +1,476 @@
+# capture.sh  phase=2  task=demo-docker-page  utc=2026-09-06T12:17:38Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c curl -fsSL https://doc.oroinc.com/backend/setup/demo-environment/docker/ | python3 -c "
+import sys,re,html
+t=sys.stdin.read()
+t=re.sub(r\"(?s)<(script|style).*?</\1>\",\" \",t)
+t=re.sub(r\"<[^>]+>\",\" \",t)
+t=html.unescape(t)
+t=re.sub(r\"[ \t]+\",\" \",t)
+t=re.sub(r\"\n\s*\n+\",\"\n\",t)
+print(t)
+"
+
+
+ Docker - OroCommerce, OroCRM and OroPlatform Documentation 
+ menu 
+ Result in: 
+ close 
+ Back to Oro Inc 
+ Users 
+ Solution Architecture Learn about the OroCommerce
+ architecture, integration points, and the infrastructure to implement it.
+ Concept Guides Get contextual references to detailed
+ feature descriptions based on your business use case.
+ Back-Office Explore the key features and learn to
+ automate workflows, create reporting and much more.
+ Commerce Storefront Introduction to OroCommerce default
+ storefront navigation, interaction, and browsing. 
+ Integrations Explore OroCommerce's pre-built and
+ custom integration options.
+ Glossary Navigate OroCommerce terms easily with
+ our comprehensive glossary guide.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ Developers 
+ Backend Developer Guide Comprehensive documentation on
+ installing, customizing, and maintaining Oro applications
+ efficiently.
+ Frontend Developer Guide Learn to efficiently customize Oro
+ apps appearance both on the Storefront and in the
+ Back-office.
+ Oro Bundles & Components Explore Oro Config Component and core
+ bundle implementation for non-standard
+ customizations. 
+ Web Services API Guide Integrate Oro functionality into
+ third-party systems with REST API guide.
+ Community Guide Learn about the best ways to
+ contribute to Oro applications, and engage with the Oro
+ community.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ Cloud Administrators 
+ Architecture Uncover OroCloud's architecture with
+ illustrative diagrams for deeper understanding.
+ Environment Types Understand OroCommerce environment
+ types for tailored deployment options and configurations.
+ Security Discover OroCloud network diagram and
+ Oro's comprehensive security protocols. 
+ Monitoring Ensure service continuity and
+ proactive resource management with OroCloud monitoring
+ tools.
+ Onboarding Streamline your Oro application
+ deployment with our comprehensive onboarding process
+ guide.
+ VPN Connection Learn how to connect OroCloud VPN
+ across different operating systems.
+ Maintenance Explore the tools to manage
+ maintenance tasks within your OroCloud environment.
+ Support Discover Oro's support process for Oro
+ authorized partners and Enterprise customers.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ OroCommerce 
+ OroHive 
+ Documentation > 
+ Developers > 
+ Backend Developer Guide > 
+ Application Setup and Configuration > 
+ Demo Environment > 
+ Docker 
+ Backend Developer Guide 
+ Application Setup and Configuration 
+ Source Code 
+ System Requirements 
+ Performance Optimization 
+ Development Environment 
+ Setup on Ubuntu 
+ Setup on macOS 
+ Setup on Windows 
+ Docker & Symfony Server 
+ Web Server Configuration 
+ Configuration Parameters 
+ Environment Variables 
+ Healthcheck and Data Monitoring 
+ Setup From Database Dump 
+ Demo Environment 
+ Docker 
+ AWS Cloud Platform 
+ Google Cloud Platform 
+ Azure Cloud Platform 
+ Jenkins CI 
+ Get the Oro Application Source Code 
+ Installation 
+ Installation in Sub-Folder 
+ Post-Install Activities 
+ Content Restrictions 
+ Flat Pricing 
+ Cookies Configuration 
+ Protected Cookies 
+ Loading Demo Data 
+ Launch 
+ Upgrade Source Code 
+ Upgrade Application 
+ Deploy Changes 
+ Reinstall 
+ CORS Configuration 
+ Application Architecture 
+ Technology Stack 
+ Database 
+ File Storage 
+ Session Storage 
+ Message Queue 
+ Search Index 
+ Query Builder 
+ Best Practices 
+ Elasticsearch Configuration and Tuning 
+ Fuzzy Search 
+ Troubleshooting 
+ Application Structure 
+ Application Framework 
+ Architecture Principles of Oro Applications 
+ Application Customization 
+ Differences to Common Symfony Applications 
+ Custom Oro Application 
+ Bundle-less Structure 
+ Bundles and Extensions 
+ Create a Bundle 
+ Install Extension from the Oro Extensions Store 
+ Add an Extension to Oro Extensions Store 
+ Entities 
+ Create Entities 
+ Database Structure Migrations 
+ Extend Entities 
+ Option Enum Set Fields 
+ Extended Associations 
+ Multi-Target Extended Associations 
+ Serialized Fields 
+ Validation for Extended Fields 
+ Define Custom Form Type for Fields 
+ Extending the Extended Field Rendering 
+ Configure Entities 
+ Define a New Object Configuration Attribute 
+ Implementation 
+ Add Configuration Options 
+ Access Entities Configuration 
+ Create Custom Entities 
+ Merge Entities 
+ CRUD Operations 
+ Custom Field Validation 
+ Entity Aliases 
+ Entity Activities 
+ Turn an Entity into an Activity 
+ Entity Fallback Values 
+ Entity Manager 
+ Entity Name Resolver and Providers 
+ Entity Class Name Provider 
+ Entity Structure Data Provider 
+ Events 
+ Dictionaries 
+ Doctrine Field Types 
+ Partial Indexes 
+ Profiler of Duplicated Queries 
+ Resolving ORM Query Hints 
+ Entity Repositories as a Services 
+ Transaction watchers for Default DBAL Connection 
+ Attributes Configuration 
+ Datagrids 
+ Pass Request Parameters to the Grid 
+ Enable Entity Pagination 
+ Customize Datagrids 
+ Backend Datagrid 
+ Scopes 
+ Views List 
+ Datasources 
+ Array Datasource 
+ ORM Datasource 
+ Parameter Binding 
+ Extensions 
+ Action Extension 
+ Board Extension 
+ Export Extension 
+ Field ACL Extension 
+ Formatter Extension 
+ Grid Views Extension 
+ Inline Editing 
+ Mass Action Extension 
+ Mode Extension 
+ Pager Extension 
+ Sorter Extension 
+ Toolbar Extension 
+ Totals Extension 
+ Organization Column Extension 
+ Events 
+ Advanced Grid Configuration 
+ Editable Datagrid Cells 
+ Selected Fields Providers 
+ State Providers 
+ References in YAML Configuration 
+ Frontend Datagrid 
+ Mass Action Configuration 
+ Protect Entities Using ACLs 
+ Entity Attachments 
+ Customize CRUD Pages 
+ Fixtures 
+ Data Sanitization 
+ Entities Data Management 
+ Fixtures and Demo Data 
+ Reports & Segments 
+ Workflows 
+ Introduction 
+ Configuration Reference 
+ Elements 
+ Basic [REDACTED] 
+ Transition Forms 
+ Transition Services 
+ Translation Wizard 
+ Workflow Events 
+ Configuration Example 
+ Operations (Actions) 
+ Glossary 
+ Buttons 
+ Action Groups 
+ Configuration Reference 
+ Actions and Conditions 
+ Console Commands 
+ Processes 
+ Data Audit 
+ Security 
+ Introduction to Security in Oro Applications 
+ ACL Manager 
+ Custom Permissions 
+ Field ACL 
+ Configurable Permissions 
+ CSRF Protection 
+ Access Rules 
+ Access Control 
+ Custom listeners 
+ Access Levels and Ownership (Example) 
+ Global View Entities 
+ HTTP Security Response Headers 
+ Translation and Localization 
+ Content and User Interface Translation 
+ Translation Configuration 
+ Data Fixtures 
+ Schema Migrations 
+ Localization 
+ Add Translations to Source Code 
+ Integrations 
+ Oro Integration Bundle 
+ Basic [REDACTED] 
+ Configuration Reference 
+ Additional Serializable Fields 
+ Reverse Synchronization 
+ Default Owner for Integration Related Entities 
+ Additional Capabilities 
+ Import and Export 
+ Overview 
+ Domain Model 
+ Gaufrette 
+ Fields Configuration 
+ Import and Export Entities 
+ Events 
+ Extend Entities to Support Bulk Import and Export 
+ Accelerate Import 
+ Postponing Rows 
+ Import Custom Format File Via Batch API 
+ API-Based Integration 
+ Initial Data Loading 
+ Notification Alerts 
+ Dashboards 
+ Navigation 
+ Emails 
+ Message Queue 
+ Message Queue Topics 
+ Message Queue Jobs 
+ Consumer 
+ Resetting Container 
+ Consumption Modes 
+ Security Context 
+ Logging, Error Handling and Debugging 
+ Writing Logs to ELK Stack 
+ Testing 
+ RabbitMQ (Enterprise Edition Only) 
+ Command Lines 
+ RabbitMQ Exchanges 
+ Divide Queue to Separate Queues 
+ Configure RabbitMQ for Production 
+ Re-deliver Message with Limited Attempts 
+ Backup and Restore 
+ Troubleshooting 
+ Supervisord 
+ Writing Logs to Stackdriver 
+ Filtering Messages in the Message Producer 
+ Buffering Messages in the Message Producer 
+ Delaying Messages 
+ Cron 
+ WebSocket Notifications 
+ Websocket Recipes 
+ Use Maintenance Mode Notifications in Oro Applications 
+ Use Content Outdated Notifications in Oro Applications 
+ Create a Topic and a Handler for Publishing and Subscribing 
+ Publish Messages to Existing Topics 
+ Use Authentication and Authorization in WebSocket Connections 
+ WebSocket Connection Configuration 
+ Scopes 
+ Feature Toggle 
+ Logging 
+ System Configuration 
+ Configuration Reference 
+ Attributes 
+ #[Acl] 
+ #[AclAncestor] 
+ #[Config] 
+ #[ConfigField] 
+ #[TitleTemplate] 
+ YAML 
+ Bundles’ Configuration 
+ Access Control Lists 
+ Access Control List Categories 
+ Assets 
+ Dashboards 
+ Datagrids 
+ Entity Configuration 
+ Navigation 
+ Placeholders 
+ JS Modules 
+ Search Index 
+ System Configuration 
+ Workflows 
+ Extending Oro Application 
+ Create Payment Method Integrations 
+ Create Shipping Method Integrations 
+ Add OroCommerce Capabilities to an OroCRM Application 
+ Common Checkout Customization Methods 
+ Akeneo Integration 
+ Automated Tests 
+ End-to-End 
+ Integration 
+ Functional 
+ k6 Performance Tests 
+ Debug Behat Tests 
+ API Developer Guide 
+ CLI Commands 
+ Configure Stateless Security Firewalls 
+ Configure Feature Depended Firewall Authenticators 
+ General Configuration 
+ Configuration Reference 
+ Configuration Extras 
+ Configuration Extensions 
+ Forms and Validators Configuration 
+ Documenting API Resources 
+ Actions 
+ Request Type 
+ Processors 
+ Headers 
+ Filters 
+ Post Processors 
+ How to 
+ CORS Configuration 
+ CORS Configuration for Published OpenAPI Specifications 
+ Testing REST API 
+ Storefront REST API 
+ Storefront Routes 
+ Batch API 
+ JSON:API EXT ID 
+ Organization Types 
+ Field Sales App 
+ Configuration Reference 
+ Version: 
+ 7.0 (latest) 
+ 5.1 
+ 6.0 
+ 6.1 
+ 7.0 (latest) 
+ 7.1 (dev) 
+ Contents 
+ Prerequisite 
+ Run Application 
+ Access the Mail Catcher 
+ Stop the Application 
+ Troubleshooting 
+ About This Project 
+ Docker   
+ Prerequisite   
+ Install Docker with Docker Compose . 
+ Note 
+ The application uses port 80, so make sure that other services do not use it. 
+ Run Application   
+ Download the repository with a docker-compose.yml configuration file. 
+ Check out the git repository 
+ git clone https://github.com/oroinc/docker-demo.git
+cd docker-demo
+ or download the archive file and extract it 
+ wget https://github.com/oroinc/docker-demo/archive/master.tar.gz -O - | tar -xzf -
+cd docker-demo
+ Run application containers 
+ The configuration is entirely predefined; the only thing you can change is the application’s domain.
+The default is oro.demo . To change it, create a .env file with the content ORO_APP_DOMAIN=my-custom-domain.demo . 
+ Run init service 
+ docker compose up restore
+ Alternatively, you can install the application from scratch. This will require more time and resources. 
+ Run install service 
+ docker compose up install
+ You can run the application as soon as it is installed or initialized: 
+ docker compose up application
+ The docker compose will download the required images, create networks and run containers. Application commerce-crm-application is used by default. 
+ If you want to get the application in a different locale, add the contents of the file .env-locale-de_DE or .env-locale-fr_FR to .env and restart the restore service and application. 
+ cat .env-locale-de_DE >> .env
+ To track the logs from the php-fpm-app container, run docker compose logs -f php-fpm-app . To get the list of containers, run docker compose ps . 
+ Add a record to file /etc/hosts 
+ 127.0.0.1 oro.demo
+ Open the application in a browser: http://oro.demo . 
+ To access the back-office, use [REDACTED-MANUAL] as login and password. (credential prose; see docs/troubleshooting.md — capture.sh matches key=value, not prose)
+ To access the storefront, use the credentials of the predefined demo user roles: 
+ To log in as a buyer, use [REDACTED-MANUAL] both as your login and password.
+ To log in as a manager, use [REDACTED-MANUAL] both as your login and password.
+ Access the Mail Catcher   
+ Smtp service is additionally launched so you can send emails from the application. It receives all mail and provides a web interface for viewing it and performing the required actions. The mail catcher web interface is available at http://oro.demo/mailcatcher . 
+ Stop the Application   
+ To stop and remove all containers, run docker compose down . 
+ To stop and remove all containers with the data saved in volumes, run docker compose down -v . 
+ Troubleshooting   
+ If you deployed the application before, pull up fresh images with docker-compose pull . 
+ About This Project   
+ This repository provides a Docker Compose configuration file (compose.yaml) and demonstrates how to run different applications and required services in containers. Oro Inc. provides Community Edition application images on public Docker Hub. 
+ Important 
+ This deployment is NOT intended for a production environment. 
+ One image runs containers in several roles: web server, php-fpm, consumer, WebSocket server, and cron service.
+A full-fledged application requires all these services running and the PostgreSQL database prepared. 
+ Business Tip 
+ Technologies are at the forefront of digital change in important sectors like manufacturing. Discover the benefits of digital transformation for manufacturing companies . 
+ Get the latest Oro News 
+ OroCommerce 
+ Compliances 
+ Compliances 
+ About Us 
+ About us 
+ Partners 
+ Events 
+ Careers 
+ Bug Bounty 
+ Certifications 
+ PCI
+ DSS 
+ SOC2 
+ Services 
+ Oro Services 
+ Training 
+ More Resources 
+ Guides & Reports 
+ Documentation 
+ OroCommerce Blog 
+ Compliances 
+ Follow Oro 
+ © 2024 Oro, Inc. All Rights Reserved 
+ Terms & Conditions 
+ Privacy Policy 
+ Data Protection Framework Certification 
+ Follow Oro 
+ Back to top 
+ 
+
+# exit_code=0

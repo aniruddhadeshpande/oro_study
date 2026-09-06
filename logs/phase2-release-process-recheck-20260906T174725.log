@@ -1,0 +1,237 @@
+# capture.sh  phase=2  task=release-process-recheck  utc=2026-09-06T12:17:25Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c curl -fsSL https://doc.oroinc.com/community/release-process/ | python3 -c "
+import sys,re,html
+t=sys.stdin.read()
+t=re.sub(r\"(?s)<(script|style).*?</\1>\",\" \",t)
+t=re.sub(r\"<[^>]+>\",\" \",t)
+t=html.unescape(t)
+t=re.sub(r\"[ \t]+\",\" \",t)
+t=re.sub(r\"\n\s*\n+\",\"\n\",t)
+print(t)
+"
+
+
+ Understanding OroCommerce Release Process 
+ menu 
+ Result in: 
+ close 
+ Back to Oro Inc 
+ Users 
+ Solution Architecture Learn about the OroCommerce
+ architecture, integration points, and the infrastructure to implement it.
+ Concept Guides Get contextual references to detailed
+ feature descriptions based on your business use case.
+ Back-Office Explore the key features and learn to
+ automate workflows, create reporting and much more.
+ Commerce Storefront Introduction to OroCommerce default
+ storefront navigation, interaction, and browsing. 
+ Integrations Explore OroCommerce's pre-built and
+ custom integration options.
+ Glossary Navigate OroCommerce terms easily with
+ our comprehensive glossary guide.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ Developers 
+ Backend Developer Guide Comprehensive documentation on
+ installing, customizing, and maintaining Oro applications
+ efficiently.
+ Frontend Developer Guide Learn to efficiently customize Oro
+ apps appearance both on the Storefront and in the
+ Back-office.
+ Oro Bundles & Components Explore Oro Config Component and core
+ bundle implementation for non-standard
+ customizations. 
+ Web Services API Guide Integrate Oro functionality into
+ third-party systems with REST API guide.
+ Community Guide Learn about the best ways to
+ contribute to Oro applications, and engage with the Oro
+ community.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ Cloud Administrators 
+ Architecture Uncover OroCloud's architecture with
+ illustrative diagrams for deeper understanding.
+ Environment Types Understand OroCommerce environment
+ types for tailored deployment options and configurations.
+ Security Discover OroCloud network diagram and
+ Oro's comprehensive security protocols. 
+ Monitoring Ensure service continuity and
+ proactive resource management with OroCloud monitoring
+ tools.
+ Onboarding Streamline your Oro application
+ deployment with our comprehensive onboarding process
+ guide.
+ VPN Connection Learn how to connect OroCloud VPN
+ across different operating systems.
+ Maintenance Explore the tools to manage
+ maintenance tasks within your OroCloud environment.
+ Support Discover Oro's support process for Oro
+ authorized partners and Enterprise customers.
+ Up for a challenge? Validate your skills
+ and earn the Oro Certificate! 
+ Learn More 
+ OroCommerce 
+ OroHive 
+ Documentation > 
+ Developers > 
+ Community Guide > 
+ Understand Release Process 
+ Community Guide 
+ Contribute 
+ Code Style 
+ Code Version Control 
+ Contribute to Translations 
+ Contribute to Documentation 
+ Logging Conventions 
+ Report Issues 
+ Source Code Issue 
+ Security Issue 
+ Documentation Issue 
+ Translation Issue 
+ Release Process 
+ Backward Compatibility 
+ Version: 
+ 7.0 (latest) 
+ 5.1 
+ 6.0 
+ 6.1 
+ 7.0 (latest) 
+ 7.1 (dev) 
+ Contents 
+ OroCommerce Enterprise Edition Releases and Support Cycle 
+ Upgrade Recommendations 
+ Version Numbering 
+ Release Schedule 
+ New Projects 
+ OroCommerce Community Edition Releases 
+ Understand Release Process   
+ OroCommerce Enterprise Edition Releases and Support Cycle   
+ Long-term support (LTS) versions are released once a year. These versions contain all features that were introduced in preview and patch releases since the previous LTS version and are recommended for general use. 
+ Preview versions are released a few months in advance of the planned LTS release. These versions contain new features, capabilities and technology updates that may not yet be complete but can be used for early compatibility testing by extension developers and system integrators in anticipation of the upcoming LTS version release. Preview versions are not maintained, there are no patch releases for preview versions, and any completed fixes are accumulated until the publication of the next preview or LTS release. 
+ Patch versions are released as often as every few weeks for all currently maintained and supported LTS versions of OroCommerce Enterprise Edition. These are mainly used for bug fixes, security patches, and minor improvements. 
+ Upgrade Recommendations   
+ For production environments, the most reliable path is to move from one LTS version to the next. This ensures long-term stability and gives your team time to adopt new features. 
+ It is recommended that you regularly apply patch releases to your active LTS version to stay current and receive continued support without needing to upgrade frequently. 
+ Consider upgrading to the newest preview versions only if you are an enterprise partner or an extension developer who needs to validate customizations and extensions, and how they work in combination with the new features ahead of the next LTS release. 
+ Version Type 
+ Recommended For 
+ When to Upgrade 
+ LTS 
+ All production users 
+ Move from one LTS to the next to maintain stability and adopt new features. 
+ Patch Releases 
+ All users on an active LTS version 
+ Apply regularly to stay supported and up-to-date. 
+ Preview Versions 
+ Enterprise partners & extension developers 
+ Use to test extensions and customizations alongside upcoming features. 
+ Version Numbering   
+ OroCommerce uses MAJOR.MINOR.PATCH version numbering scheme: 
+ Major version releases are reserved for significant backward incompatible architecture and technology changes, e.g., a switch to a new version of the Symfony framework. 
+ Minor version releases introduce new features and provide a clear migration path in case of relatively small backward incompatible architectural and technology changes. 
+ Patch version releases usually do not contain any backward incompatible changes, unless explicitly stated otherwise in the release notes. 
+ Developer preview versions may have additional suffixes to denote the expected amount of upcoming changes at the code interface level (e.g., Beta and RC preview releases). 
+ Release Schedule   
+ The Oro team works on OroCommerce using a time-based schedule, with an LTS version coming out every year in March and multiple preview and patch versions published between LTS releases. 
+ Note 
+ LTS versions of OroCommerce Enterprise Edition are supported for 48 months from the release date. Oro’s Extended Coverage service extends the lifespan of an OroCommerce LTS version by an additional 24 months, allowing for a total support period of up to 6 years. This service lengthens the service period of all critical product patches and security fixes for the respective LTS version. Existing OroCommerce customers should contact their Customer Success Manager for more information. 
+ For versions released prior to 5.1 LTS, the standard support period is 36 months. Extended Coverage may be available for purchase on a case-by-case basis, with the maximum coverage period specified in the table below. 
+ Below is the approximate schedule of the currently maintained/supported and planned upcoming releases and support timelines of OroCommerce Enterprise Edition. 
+ OroCommerce Enterprise Edition 
+ Release Date 
+ Support Ends 
+ Extended Coverage Up To 
+ 4.1 LTS 
+ January 2020 
+ January 2023 
+ N/A 
+ 4.2 LTS 
+ January 2021 
+ January 2024 
+ December 2026 
+ 5.0 LTS 
+ January 2022 
+ January 2025 
+ January 2028 
+ 5.1 LTS 
+ March 2023 
+ March 2027 
+ March 2029 
+ 6.0 LTS 
+ March 2024 
+ March 2028 
+ March 2030 
+ 6.1 LTS 
+ March 2025 
+ March 2029 
+ March 2031 
+ 7.0 LTS 
+ March 2026 
+ March 2030 
+ March 2032 
+ 7.1 LTS 
+ March 2027 
+ March 2031 
+ March 2033 
+ New Projects   
+ If you are planning to start a new project in 2026, we recommend beginning development on the most recent available patch version of the 7.0 LTS release. 
+ OroCommerce Community Edition Releases   
+ The Oro team produces patch releases for each version of OroCommerce Community Edition for 12 months after its release. 
+ Community developers and users have access to the following two product branches: 
+ Stable – 7.0 branch points to the latest stable release. Use this branch for testing and deployment. To benefit from the latest features, fixes, and security updates, upgrade to the next patch release tag as soon as it becomes available. 
+ Development – 7.1 branch points to the latest published commit and is updated frequently. This branch should be used only by the developers and contributors who actively follow the project progress on GitHub. This branch is not considered stable and is not recommended for production use. 
+ OroCommerce Community Edition 
+ Release Date 
+ Patch Releases Available Until 
+ 5.0 
+ January 2022 
+ March 2023 
+ 5.1 
+ March 2023 
+ March 2024 
+ 6.0 
+ March 2024 
+ March 2025 
+ 6.1 
+ March 2025 
+ March 2026 
+ 7.0 
+ March 2026 
+ March 2027 
+ Business Tip 
+ Want to find out everything about business-to-business eCommerce and how it varies from B2C? Check out our in-depth overview of the subject. 
+ Get the latest Oro News 
+ OroCommerce 
+ Compliances 
+ Compliances 
+ About Us 
+ About us 
+ Partners 
+ Events 
+ Careers 
+ Bug Bounty 
+ Certifications 
+ PCI
+ DSS 
+ SOC2 
+ Services 
+ Oro Services 
+ Training 
+ More Resources 
+ Guides & Reports 
+ Documentation 
+ OroCommerce Blog 
+ Compliances 
+ Follow Oro 
+ © 2024 Oro, Inc. All Rights Reserved 
+ Terms & Conditions 
+ Privacy Policy 
+ Data Protection Framework Certification 
+ Follow Oro 
+ Back to top 
+ 
+
+# exit_code=0

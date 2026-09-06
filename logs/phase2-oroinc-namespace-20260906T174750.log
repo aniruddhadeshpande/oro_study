@@ -1,0 +1,59 @@
+# capture.sh  phase=2  task=oroinc-namespace  utc=2026-09-06T12:17:50Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c curl -fsSL "https://hub.docker.com/v2/repositories/oroinc/?page_size=100" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print(\"count:\",d.get(\"count\"))
+for r in sorted(d[\"results\"], key=lambda x: x.get(\"last_updated\") or \"\", reverse=True):
+    print(r[\"name\"], r.get(\"last_updated\"))
+"
+
+count: 46
+rabbitmq 2026-05-28T10:49:25.532815Z
+docker-hoster 2026-05-16T07:31:44.547662Z
+orocommerce-application-init-de 2025-12-18T10:32:12.688802Z
+orocommerce-application-init-fr 2025-12-18T10:21:53.48539Z
+orocommerce-application-init 2025-12-18T10:11:08.126481Z
+orocommerce-application 2025-12-18T09:53:12.432536Z
+runtime 2025-12-17T18:09:31.619894Z
+chrome 2025-12-09T11:58:03.250084Z
+pgsql 2025-11-10T11:27:40.258378Z
+jenkins 2025-04-30T15:20:30.067812Z
+agent 2025-04-30T15:18:39.326561Z
+nginx-proxy 2024-07-24T09:40:32.871859Z
+test 2024-06-04T13:15:07.728277Z
+builder 2024-06-04T13:14:42.243249Z
+nginx-waf 2024-01-02T20:22:29.824596Z
+documentation 2023-09-22T08:24:13.077778Z
+git19 2023-02-17T23:43:09.94212Z
+data-tools 2023-02-08T12:40:11.572395Z
+app-build 2022-08-08T12:10:16.980738Z
+mongodb-database-tools 2022-01-31T17:33:37.229842Z
+php 2021-12-30T16:49:54.261483Z
+php-fpm 2021-12-30T16:46:02.185134Z
+commerce-crm-application-behat 2021-11-18T12:42:38.071616Z
+commerce-crm-application-backup-sample_data 2021-11-18T12:41:58.961545Z
+commerce-crm-application-backup 2021-11-18T12:41:34.628389Z
+commerce-crm-application 2021-11-18T12:41:16.779606Z
+commerce-crm-application-de-backup-sample_data 2021-11-18T12:28:05.126461Z
+commerce-crm-application-de-backup 2021-11-18T12:27:45.549741Z
+commerce-crm-application-de 2021-11-18T12:27:24.625134Z
+crm-application-backup-sample_data 2021-11-18T12:23:47.607665Z
+crm-application-backup 2021-11-18T12:23:30.509855Z
+crm-application 2021-11-18T12:23:12.545875Z
+platform-application-backup-sample_data 2021-11-18T12:20:21.913975Z
+platform-application-backup 2021-11-18T12:20:03.470568Z
+platform-application 2021-11-18T12:19:49.083875Z
+elasticsearch 2020-08-27T14:28:52.474068Z
+consumer 2019-05-31T12:10:52.971898Z
+cron 2019-05-31T12:10:29.336692Z
+websocket 2019-05-31T12:10:07.395829Z
+nginx 2018-09-05T05:25:53.038113Z
+mysql 2017-12-14T17:41:57.546474Z
+data-cache 2017-12-14T17:04:14.534831Z
+data 2017-12-14T17:03:56.25908Z
+docker-dns-gen 2017-12-14T17:03:42.223185Z
+composer 2017-12-14T17:00:29.597207Z
+aio 2017-10-30T13:14:45.898397Z
+
+# exit_code=0

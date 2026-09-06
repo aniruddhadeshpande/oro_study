@@ -1,0 +1,19 @@
+# capture.sh  phase=2  task=runtime-tags  utc=2026-09-06T12:17:22Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c curl -fsSL "https://hub.docker.com/v2/repositories/oroinc/runtime/tags?page_size=100&ordering=last_updated" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print(\"count:\", d.get(\"count\"))
+for r in d[\"results\"][:25]:
+    print(r[\"name\"], r[\"last_updated\"])
+"
+
+count: 6
+6.1-latest 2025-12-17T18:09:30.548014Z
+5.1-latest 2025-04-03T14:43:15.563301Z
+master-latest 2025-04-03T12:48:59.993323Z
+6.0-latest 2024-04-16T14:48:39.363Z
+5.0-latest 2023-05-03T07:55:23.243549Z
+5.1-1.0 2023-04-25T12:10:34.770132Z
+
+# exit_code=0

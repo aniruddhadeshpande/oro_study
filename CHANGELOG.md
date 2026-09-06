@@ -168,3 +168,77 @@ creating a network — out of scope for a read-only phase). Low risk; recorded b
 surfaces at `up` time, not `config` time, and is easily misread as a compose-file fault.
 
 **System state after this entry:** unchanged.
+
+---
+
+## 2026-09-06 — Phase 2: Plan
+
+**Wrote** `specs/01-implementation-plan.md` (task 0 + tasks 3.1–3.7, each with command, validation
+and rollback) and `docs/troubleshooting.md` (entry T1). Rewrote `specs/STATE.md`. Read-only
+throughout: seven captures, all network GETs or `git ls-remote`, nothing on the host modified.
+
+### The finding: the spec's target version cannot be reached by the spec's chosen path
+
+| Evidence | Result | Log |
+|---|---|---|
+| `git ls-remote --heads --tags oroinc/docker-demo` | branches `5.0 5.1 6.0 master`; **no `7.0`, no tags** | `phase2-remote-refs` |
+| `master:.env` | `ORO_IMAGE_TAG=6.1.6`, `ORO_BASELINE_VERSION=6.1-latest`, `ORO_DB_VERSION=17.2` | `phase2-upstream-env` |
+| Docker Hub `oroinc/orocommerce-application` | 5 tags, newest **6.1.6** pushed **2025-12-18**. No 7.0 | `phase2-dockerhub-tags` |
+| Docker Hub `oroinc/runtime` | 6 tags, newest `6.1-latest` | `phase2-runtime-tags` |
+| Docker Hub `oroinc/` namespace (46 repos) | whole `orocommerce-application*` family last pushed 2025-12-18 | `phase2-oroinc-namespace` |
+| Demo docs page | banner **7.0 (latest)**; instruction is a bare `git clone` — i.e. `master` | `phase2-demo-docker-page` |
+| Release-process page | banner **7.0 (latest)**. CE patch: 7.0 = Mar 2026→Mar 2027; **6.1 = Mar 2025→Mar 2026, expired** | `phase2-release-process-recheck` |
+
+Oro ships 7.0 documentation over a 6.1 demo. No 7.0 Community application image has ever been
+published, so an `ORO_IMAGE_TAG=7.0.x` override would reference an image that does not exist. This
+is **Decision D1**, plan §0: accept 6.1.6 and amend spec §1 (recommended), rebuild for 7.0 by a path
+the spec already rejected on its merits, or stop. Phase 3 does not start until it is answered.
+
+Nothing about the exercise changes under 6.1: CE is CE — DBAL transport, ORM search engine, the same
+twelve services, the same collapse of both async subsystems into PostgreSQL.
+
+### Two defects found in this repo's own artefacts
+
+**`docker/.env.template` is wrong and acting on it would break the stack** (G12). It says "copy to
+`docker/.env`". Upstream ships a complete `.env` — image tags, `ORO_DB_*`, the nginx and WebSocket
+upstream JSON — and compose reads it automatically. Overwriting it with our nine-line template
+strips all of that and produces a failure that looks like an Oro bug. Plan task 3.3 is now *do not
+overwrite*, plus a header correction. The doc page agrees: "the only thing you can change is the
+application's domain."
+
+**`capture.sh` redaction misses prose credentials** (G11, `docs/troubleshooting.md` T1). It matches
+`key=value`, `scheme://user:pass@host`, and `Bearer`/`Basic`. The demo page states its credentials
+in sentences; three such lines reached a tracked log. Scrubbed to `[REDACTED-MANUAL]`, repo-wide
+sweep clean, `logs/raw/` unaffected (gitignored by design). The filter is not broken — its coverage
+is narrower than the guarantee the project assumes, and prose is what documentation uses.
+
+### Validation
+
+| Check | Result |
+|---|---|
+| Gate: STATE.md reads Phase 1 COMPLETE | PASS |
+| Every plan task has command + validation + rollback | PASS — 8 of 8 |
+| `/etc/hosts` reverse `sed` captured *before* any edit | PASS — with pre-state md5 `deb7c2f9…`, 10 lines, 0 `oro.demo` |
+| No closed-list command anywhere in the plan | PASS — no `down -v`, `prune`, `volume rm`, `rm -rf`, `apt`, firewall |
+| Redaction on real credentials | **PASS** — raw held 3 populated `ORO_*PASSWORD=` plus a password-bearing `postgres://` DSN; emitted log has 4 `[REDACTED]`, 0 survivors |
+| Prose-credential sweep across `logs/ docs/ specs/ runbook/ CHANGELOG.md` | PASS — clean after manual scrub |
+| System state unchanged | PASS |
+
+### Gaps
+
+**Closed: G1** (image tags read from upstream `.env`; digests still unpinned), **G2**
+(`ORO_INSTALL_OPTIONS=` — empty upstream, the install service passes nothing), **G3** (both doc
+banners confirmed **7.0 (latest)**, no longer inferred from figures), **G6** (redaction proven
+against real credentials — this was the synthetic-only gap).
+
+**Opened: G10** image pull size unmeasured · **G11** prose-credential redaction · **G12**
+`.env.template` instruction wrong.
+
+**Still open:** G4, G5 (Phase 4) · G7 (task 0, before approval) · G8 (Phase 6) · G9 (first `up`).
+
+**Outstanding `UNVERIFIED:`** — 3, down from 4. Two closed by G2/G3; one added (upstream `master`
+SHA may move between `ls-remote` and clone). Remaining: image digests, Docker address-pool bound,
+clone-time SHA.
+
+**System state after this entry:** unchanged. 16 `docker_magento` containers running, `oro.demo`
+does not resolve, `docker/` holds `.env.template` and `.gitkeep`, port 80 free.

@@ -1,0 +1,18 @@
+# capture.sh  phase=2  task=dockerhub-tags  utc=2026-09-06T12:17:06Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c curl -fsSL "https://hub.docker.com/v2/repositories/oroinc/orocommerce-application/tags?page_size=100&ordering=last_updated" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print(\"count:\", d.get(\"count\"))
+for r in d[\"results\"]:
+    print(r[\"name\"], r[\"last_updated\"])
+"
+
+count: 5
+6.1.6 2025-12-18T09:53:11.37888Z
+6.1.0 2025-04-03T12:53:10.099239Z
+6.0.2 2024-07-11T11:54:35.495115Z
+6.0.1 2024-06-10T14:33:22.136717Z
+5.1.0 2023-04-06T16:45:55.265127Z
+
+# exit_code=0
