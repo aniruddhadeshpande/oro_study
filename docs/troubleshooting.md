@@ -104,3 +104,85 @@ the backup.
 one proven by diffing a backup, and it does not depend on the backup having been taken. Recording
 the pre-state md5 plus the reverse command *before* the edit made the rollback verifiable even
 though the planned artefact was missing. Prefer that ordering everywhere.
+
+---
+
+## T4 — `oro:search:reindex` reports success while doing nothing
+
+**Phase 6, check-7 experiment, 2026-09-06.** Not a failure of the system — a failure mode of the
+*interface to* the system, and the more dangerous kind because it is silent and green.
+
+With `consumer` stopped, `php /var/www/oro/bin/console oro:search:reindex` printed:
+
+```
+Started reindex task for all mapped entities
+Reindex finished successfully.
+```
+
+and exited 0. No reindexing had occurred or could occur. `oro_message_queue` went 0 → 1; the work
+sat there. Held 45 seconds: depth rose to 2 (cron adding more) and **nothing drained**. Restarting
+the consumer drained it to 0 within 8 seconds.
+
+**Root cause:** the command's job is to enqueue. Its exit code and its message describe the enqueue,
+not the reindex. This is correct behaviour, wrongly readable.
+
+**Why it matters:** wired into a deploy script, a smoke test or a CI gate, this returns green for an
+operation that has not started. The Magento habit of treating a reindex exit code as completion
+transfers badly.
+
+**The assertion to use instead:** `select count(*) from oro_message_queue` returning to its prior
+depth. Not container state — see T5.
+
+---
+
+## T5 — a dead consumer is invisible to every check in the stack
+
+**Same experiment.** While the consumer was stopped for ~60 seconds:
+
+- storefront `curl -sI http://oro.demo/` → **200** throughout
+- `docker compose ps` — every long-running service `running`
+- all three healthchecks (`db` `pg_isready`, `php-fpm-app` `php-fpm-healthcheck`, `web` `curl -If`) passing
+- `validate.sh` checks 1–5 and 8–10 would all have passed
+
+**Root cause:** only 3 of 12 services define a healthcheck — `db`, `php-fpm-app`, `web`.
+`consumer`, `cron` and `ws` define none. The async tier is entirely unmonitored by the compose
+stack, and the synchronous tier is genuinely healthy while the async tier is dead, so no
+HTTP-level probe can detect it either.
+
+**Fix (monitoring, not code):** alert on **queue depth and oldest-message age**, never on container
+liveness. Two derived rules from the same experiment:
+
+- A *rising* depth with the consumer `running` is a stuck consumer; a rising depth with it absent is
+  a dead one. Both look identical from HTTP.
+- `cron` keeps enqueuing while the consumer is down, so depth grows even with zero user activity.
+  A quiet system is not a safe one.
+
+**Related, and easy to misread in the opposite direction:** inside the consumer container, PID 7
+(`job-runner.phar`) showed 28:37 elapsed while the actual console process showed 13:19. The runner
+respawns the consumer on `--time-limit=15minutes --memory-limit=1024`. **A consumer process younger
+than its container is healthy** — the design recycles it to bound memory. Reading a short-lived
+worker as "crash-looping" sends the responder after a non-problem.
+
+---
+
+## T6 — pre-existing data defect in the shipped demo dataset
+
+**Phase 6, during the check-7 reindex.** `oro:search:reindex` logged:
+
+```
+app.ERROR: Errors occurred while preparing data for the search index.
+For the entity "oro_sale_quote", the following fields: "poNumber" have wrong type.
+```
+
+The reindex completed and the queue drained to 0; validation checks 9 (storefront search, 626 KB
+returned) and 5 (schema) pass. So this is **not** blocking, and it is not caused by anything done in
+this project.
+
+**Root cause:** a type mismatch between the search-index mapping for `oro_sale_quote.poNumber` and
+the value in the restored demo dataset. It ships that way in
+`oroinc/orocommerce-application-init:6.1.6`.
+
+**Recorded, not fixed.** Fixing vendor demo data is out of scope and would make this environment
+non-representative. It is documented because a reader who runs a reindex will see this error and
+needs to know it is inherited, expected, and harmless here — and because it is a useful reminder
+that "reindex finished" and "reindex was clean" are different claims (see T4).

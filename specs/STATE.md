@@ -1,33 +1,33 @@
 # STATE — read this first, every session
 
-## Current phase: 5 — Evidence — **COMPLETE.** Next: Phase 6 — /oro-document
-## Last completed task: **Phase 5 — evidence set captured, 10 artefacts (logs/phase5-*).**
-##   Redaction verified: 37 credential-pattern matches, ALL [REDACTED], 0 leaks; URI sweep clean.
-##   One prose hit reviewed, judged not a leak (default account name + placeholder email, no value).
-##   D1 CONFIRMED FROM INSIDE: composer.lock -> oro/commerce, oro/platform, oro/customer-portal
-##   all 6.1.6; no oro/commerce-enterprise package. CE proven at package level.
-##   Digests captured (UNVERIFIED closed). Footprint corrected: **~3.22 GB across FOUR images** —
-##   task 3.5's 2.67 GB missed oroinc/runtime:6.1-latest (553 MB), pulled later in 3.6.
-##   Runtime observed: **PHP 8.4.14 · PostgreSQL 17.2 · Node ABSENT from the runtime image**
-##   (assets built into the image, not compiled at runtime — the sharp Magento contrast).
-##   Consumer: container elapsed 28:37 vs inner process 13:19 — job-runner.phar respawns on
-##   --time-limit=15minutes. Process younger than its container is HEALTHY, not a crash.
-##   NOTE: the command specified `php bin/console --version`; used the absolute path per T2.
+## Current phase: 6 — Documentation — **COMPLETE.** Next: Phase 7 — /oro-summary (FINAL)
+## Last completed task: **Phase 6 — docs written + check 7 CLOSED by experiment.**
+##   GATE NOTE: /oro-document refuses on any UNRUN Phase 4 check. Check 7 was unrun (user had left
+##   it MANUAL before that gate was in view), so it was RUN rather than waived — no browser needed;
+##   stop/start consumer is not on the closed list.
+##   **Check 7 PASS by experiment**: consumer stopped -> depth 1, held 45s -> depth 2, NOTHING
+##   drained; consumer started -> depth 0 at t+8s. Drain bound <8s. Both directions proven.
+##   validate.sh still prints MANUAL for 7 by design (a script cannot self-assess an experiment).
+##   Docs: 02-architecture.md (285L), 03-request-flow.md (155L), 04-magento-mapping.md (164L),
+##   troubleshooting.md (188L, T1-T6). NO doc URLs emitted at all -> no UNVERIFIED markers needed.
+##   New troubleshooting entries T4 (reindex reports success while doing nothing), T5 (dead
+##   consumer invisible to every check — only 3 of 12 services healthchecked), T6 (vendor demo
+##   data defect: oro_sale_quote.poNumber wrong type — non-blocking, deliberately NOT fixed).
+##   logs/phase4-check7-queue-roundtrip-*, phase4-validation-table-final-*, phase6-*
 ## Decision D1: **ANSWERED 2026-09-06 — option A, build against 6.1.6 CE.**
 ##   specs/00-environment-spec.md §1 amended; CLAUDE.md verification rule amended (6.1 is now the
 ##   right doc page, 7.0 pages are forward references only).
-## Next task: **Phase 6 — `/oro-document` (Opus).** Write docs/02-architecture.md from what was
-##   OBSERVED, not what the docs claim. Material is in CHANGELOG Phase 4/5 entries + logs/phase5-*.
-##   Check 7 remains open at user's discretion; it does not gate this phase.
-## Approved scope: Phases 4 and 5 complete, read-only throughout. Phase 6 (docs) writes only to docs/.
+## Next task: **Phase 7 — `/oro-summary` (Opus). FINAL PHASE.** Update the runbook and emit the
+##   final report. All 13 validation checks are now run; nothing is outstanding.
+## Approved scope: Phases 4-6 complete. Phase 7 (summary) writes runbook/ and the final report.
 ## Blocked on: nothing.
 ## Open approvals needed: none outstanding. (Phase 3's two CONFIRM points were both granted and
 ##   are spent — no standing grant carries forward. Any future magento-stack start/stop, /etc/hosts
 ##   write, or docker/ bulk delete asks again.)
 ## Plan approved (Phase 2): **YES** — approved by the user 2026-09-06, after the G7 gate test.
 ##   Task-level STOP-AND-ASK approvals do NOT follow from this: 3.4 and 3.7 each ask again.
-## Validation table: **13/13 run, 0 failures** — 9 PASS · 1 MANUAL (check 7, open by user choice) ·
-##   3 EXPECTED-ABSENT. This IS the Phase 4 validation, not a per-task check.
+## Validation table: **13/13 run, 0 failures, NOTHING OUTSTANDING** — 9 PASS · check 7 PASS by
+##   experiment (drain bound <8s, both directions) · 3 EXPECTED-ABSENT (correct CE outcome).
 ## Plan tasks: **7/7 PASS** (Phase 3, complete) · Phase 4 validation complete, 0 failures
 ## UNVERIFIED items outstanding: **1** (was 4)
 ##   CLOSED: image digests — captured in Phase 5, all four sha256 recorded.
@@ -95,7 +95,9 @@ lines 3–4 already `127.0.0.1 php-docker.test` and `127.0.0.1 magento.docker`.
   runtime:6.1-latest 553 MB, pgsql:17.2-alpine 278 MB. Digests in logs/phase5-image-digests-*.
 - Runtime: PHP 8.4.14 · PostgreSQL 17.2 · Symfony 6.4.28 · **no Node in the runtime image**.
 - oro/commerce 6.1.6, oro/platform 6.1.6, oro/customer-portal 6.1.6; no EE package present.
-- Consumers proven live: oro_message_queue drained 50 -> 11 -> 0 across three observations.
+- Consumers proven live AND proven necessary: queue drained 50 -> 11 -> 0 passively; then the
+  controlled experiment showed depth 1 -> 2 with the consumer stopped (nothing drained) and 0 at
+  t+8s after restart. Alert on QUEUE DEPTH, not container state — see docs/troubleshooting T5.
 - **Console commands need the absolute path**: `/var/www/oro/bin/console`. WORKDIR is `/`.
 
 ## Notes for whoever picks this up

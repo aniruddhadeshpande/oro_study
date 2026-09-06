@@ -669,3 +669,79 @@ over silently, since G11 means the mechanical filter is not the last word and pr
 read by a human eye, not assumed clean.
 
 Evidence: `logs/phase5-*` (10 artefacts).
+
+## 2026-09-06 — Check 7 CLOSED by experiment · Phase 6 (Documentation) COMPLETE
+
+### Gate conflict, resolved by closing the check rather than waiving it
+
+`/oro-document` refuses to start "while any Phase 4 check is unrun or FAILing". Check 7 was **unrun**
+— the user had earlier chosen to leave it MANUAL to close Phase 4, a decision made before this gate
+was in view. Rather than override a refusal instruction, check 7 was run. No browser was needed:
+stopping the consumer and observing the queue is the same experiment, and neither
+`docker compose stop consumer` nor `start` is on the STOP-AND-ASK list.
+
+### Check 7 — queue round trip. PASS by experiment.
+
+| Condition | Depth | Elapsed |
+|---|---|---|
+| Consumer running, idle | 0 | baseline |
+| Consumer **stopped**, `oro:search:reindex` run | 1 | immediate |
+| Consumer **stopped**, held | **2** (cron added more) | +45s — nothing drained |
+| Consumer started | 2 | t+2s |
+| Consumer running | **0** | **t+8s — drained** |
+
+**Drain bound: under 8 seconds.** Both directions proven — the positive (work drains when the
+consumer is live) and the negative (work provably does not drain when it is not). `validate.sh` still
+prints `MANUAL` for check 7 by design; the script cannot self-assess an experiment. Final table:
+`failures: 0`, stack healthy afterwards (7 long-running services, depth 0, storefront 200).
+
+Evidence: `logs/phase4-check7-queue-roundtrip-20260906T190525.log`,
+`logs/phase4-validation-table-final-20260906T190545.log`.
+
+### Three findings the experiment produced — all new, none predictable from a running-container check
+
+**T4 — `oro:search:reindex` reports success while doing nothing.** With the consumer stopped it
+printed "Reindex finished successfully" and exited 0. Its job is to enqueue; its exit code describes
+the enqueue, not the reindex. Wired into a deploy or CI gate this returns green for work that has not
+started.
+
+**T5 — a dead consumer is invisible to every check in the stack.** Throughout the stall: storefront
+200, all services `running`, all three healthchecks passing. Only 3 of 12 services define a
+healthcheck (`db`, `php-fpm-app`, `web`); `consumer`, `cron` and `ws` define none. Rule: alert on
+queue depth and oldest-message age, never on container liveness. Corollary: `cron` keeps enqueuing
+while the consumer is down, so depth grows with zero user activity.
+
+**T6 — pre-existing defect in the vendor demo dataset.** The reindex logged
+`For the entity "oro_sale_quote", the following fields: "poNumber" have wrong type`. Ships that way
+in `orocommerce-application-init:6.1.6`. Non-blocking (reindex completed, queue drained, checks 5
+and 9 pass). Recorded, deliberately not fixed — patching vendor demo data would make this
+environment non-representative.
+
+### Documentation written
+
+| File | Lines | Contents |
+|---|---|---|
+| `docs/02-architecture.md` | 285 | Version disagreement · 12-service inventory with failure impact · Mermaid topology · image economy · dependency conditions · where cache/search/queue/session physically sit · the measured async path · request path · explicit "what this does not tell you" |
+| `docs/03-request-flow.md` | 155 | One synchronous storefront trace and one asynchronous reindex trace, container-annotated per hop, plus a Mermaid sequence diagram showing the two paths meeting only at `db` |
+| `docs/04-magento-mapping.md` | 164 | Observed components mapped `same`/`similar`/`different`/`no equivalent` across infrastructure, queue, search, cache/sessions and application concepts |
+| `docs/troubleshooting.md` | 188 | Six entries (T1–T6), all failures actually hit |
+
+**No documentation URLs were emitted at all** — verified by grep. Nothing therefore required an
+`UNVERIFIED:` marker, and no plausible-looking Oro doc URL was invented.
+
+### Architectural findings recorded for the first time
+
+- **One runtime image, six roles.** `oroinc/runtime:6.1-latest` backs `php-fpm-app`, `web`, `ws`,
+  `consumer`, `cron`, `application` — role selected by `command`. The application code is not in it;
+  it arrives in the shared `oro_app` volume from a *separate* image. Runtime and application are
+  versioned independently (`6.1-latest` vs `6.1.6`).
+- **Two search indices, not one.** `oro_search` (back office) and `oro_website_search` (storefront)
+  are separate with independent lifecycles. No Magento equivalent.
+- **The shared `cache` volume is how CE survives without Redis** — and is the hard ceiling on
+  scaling out, alongside `ORO_SESSION_DSN=native:` (local-file sessions).
+- **No reverse proxy or FPC tier anywhere in the stack.** Storefront returns
+  `Cache-Control: private`; every hit executes PHP.
+- **Dependency conditions use `service_healthy` / `service_completed_successfully`**, not
+  `service_started` — no boot races, no sleep loops. Cost: only 3 of 12 services are healthchecked.
+
+**PHASE 6 COMPLETE.** All Phase 4 checks run, none failing.
