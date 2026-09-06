@@ -1,0 +1,1021 @@
+# capture.sh  phase=3  task=compose-config  utc=2026-09-06T12:50:55Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker && docker compose config
+
+name: docker
+services:
+  application:
+    command:
+      - --
+      - "true"
+    depends_on:
+      consumer:
+        condition: service_started
+        required: true
+      cron:
+        condition: service_started
+        required: true
+      web:
+        condition: service_started
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/runtime:6.1-latest
+    networks:
+      default: null
+  consumer:
+    command:
+      - consumer
+    depends_on:
+      php-fpm-app:
+        condition: service_healthy
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_LOG_PATH: php://stderr
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/runtime:6.1-latest
+    init: true
+    networks:
+      default: null
+    restart: unless-stopped
+    tmpfs:
+      - /tmp
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: maintenance_folder
+        target: /var/www/oro/var/maintenance
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+  cron:
+    command:
+      - cron
+    depends_on:
+      php-fpm-app:
+        condition: service_healthy
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_LOG_PATH: php://stderr
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/runtime:6.1-latest
+    networks:
+      default: null
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1048576
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: multihost_operation_folder
+        target: /var/www/oro/var/multihost
+        volume: {}
+      - type: volume
+        source: maintenance_folder
+        target: /var/www/oro/var/maintenance
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+  db:
+    environment:
+      POSTGRES_DB: orodb
+      POSTGRES_PASSWORD: [REDACTED]
+      POSTGRES_ROOT_PASSWORD: [REDACTED]
+      POSTGRES_USER: orodbuser
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U$${POSTGRES_USER} -d$${POSTGRES_DB}
+      start_period: 1m0s
+    image: docker.io/oroinc/pgsql:17.2-alpine
+    labels:
+      com.symfony.server.service-prefix: ORO_DB
+    networks:
+      default: null
+    restart: unless-stopped
+  install:
+    command:
+      - install
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+      mail:
+        condition: service_started
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/orocommerce-application:6.1.6
+    networks:
+      default: null
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+  mail:
+    environment:
+      MH_MAILDIR_PATH: /home/mailhog/maildir
+      MH_STORAGE: maildir
+      MH_UI_WEB_PATH: mailcatcher
+    hostname: mail
+    image: mailhog/mailhog
+    networks:
+      default: null
+    restart: unless-stopped
+  php-fpm-app:
+    command:
+      - php-fpm
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+      mail:
+        condition: service_started
+        required: true
+      volume-init:
+        condition: service_completed_successfully
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_LOG_PATH: php://stderr
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - php-fpm-healthcheck
+      timeout: 30s
+      interval: 5s
+      start_period: 15s
+    image: oroinc/runtime:6.1-latest
+    networks:
+      default: null
+    restart: unless-stopped
+    tmpfs:
+      - /tmp
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: multihost_operation_folder
+        target: /var/www/oro/var/multihost
+        volume: {}
+      - type: volume
+        source: maintenance_folder
+        target: /var/www/oro/var/maintenance
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+  restore:
+    command:
+      - restore
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+      mail:
+        condition: service_started
+        required: true
+      volume-init:
+        condition: service_completed_successfully
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/orocommerce-application-init:6.1.6
+    networks:
+      default: null
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+  volume-init:
+    command:
+      - --
+      - "true"
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/orocommerce-application:6.1.6
+    networks:
+      default: null
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+  web:
+    command:
+      - nginx
+    depends_on:
+      php-fpm-app:
+        condition: service_healthy
+        required: true
+      web-init:
+        condition: service_completed_successfully
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -If http://127.0.0.1:80/
+      timeout: 30s
+      interval: 15s
+      start_period: 15s
+    image: oroinc/runtime:6.1-latest
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp
+    restart: unless-stopped
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        read_only: true
+        volume: {}
+      - type: volume
+        source: maintenance_folder
+        target: /var/www/oro/var/maintenance
+        volume: {}
+      - type: volume
+        source: nginx
+        target: /opt/oro-nginx
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        read_only: true
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        read_only: true
+        volume: {}
+  web-init:
+    command:
+      - -c
+      - |
+        echo "$$(jq '.properties.sites.propertyNames.pattern = ".*"' /opt/oro-nginx-tool/variables.schema.json)" > /opt/oro-nginx-tool/variables.schema.json
+        /usr/local/bin/docker-entrypoint.sh nginx-init && sed -i '/gridfs/d; /mongo/d' /opt/oro-nginx/etc/sites-available/*.conf
+    depends_on:
+      php-fpm-app:
+        condition: service_healthy
+        required: true
+      ws:
+        condition: service_started
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/orocommerce-application:6.1.6
+    networks:
+      default: null
+    volumes:
+      - type: volume
+        source: nginx
+        target: /opt/oro-nginx
+        volume: {}
+  ws:
+    command:
+      - websocket
+    depends_on:
+      php-fpm-app:
+        condition: service_healthy
+        required: true
+    environment:
+      HP_MEMORY_LIMIT: 6096M
+      ORO_APP_DOMAIN: oro.demo
+      ORO_APP_PROTOCOL: http
+      ORO_APP_URL: http://oro.demo
+      ORO_BASELINE_VERSION: 6.1-latest
+      ORO_CONSUMER_SERVICE: consumer
+      ORO_DB_DSN: postgres://orodbuser:[REDACTED]@db:5432/orodb?sslmode=disable&charset=utf8&serverVersion=17.2
+      ORO_DB_HOST: db
+      ORO_DB_NAME: orodb
+      ORO_DB_PASSWORD: [REDACTED]
+      ORO_DB_PORT: "5432"
+      ORO_DB_ROOT_PASSWORD: [REDACTED]
+      ORO_DB_ROOT_USER: orodbuser
+      ORO_DB_USER: orodbuser
+      ORO_DB_VERSION: "17.2"
+      ORO_DEBUGGER: -no
+      ORO_ENV: prod
+      ORO_FORMATTING_CODE: en_US
+      ORO_GLOBAL_HTTP_PORT: "80"
+      ORO_GLOBAL_LIMIT_REQ_ENABLE: "false"
+      ORO_GLOBAL_LOCK_FILE_PATH: /var/www/oro/var/maintenance/global_lock
+      ORO_GLOBAL_SHARED_ROOT_DIR: /var/www/oro/var/maintenance
+      ORO_GLOBAL_TESTCOOKIE_ENABLE: "false"
+      ORO_GLOBAL_USE_UPSTREAM: "true"
+      ORO_HTTP_UPSTREAM: '{"app":{"servers":[{"host":"php-fpm-app","port":9000}]},"ws":{"servers":[{"host":"ws","port":8080}]}}'
+      ORO_IMAGE: oroinc/orocommerce-application
+      ORO_IMAGE_BASE_RUNTIME: oroinc/runtime
+      ORO_IMAGE_INIT: oroinc/orocommerce-application-init
+      ORO_IMAGE_TAG: 6.1.6
+      ORO_INSTALL_OPTIONS: ""
+      ORO_LANGUAGE: en
+      ORO_LOG_PATH: php://stderr
+      ORO_MAILER_DSN: smtp://mail:1025
+      ORO_MAINTENANCE_LOCK_FILE_NAME: maintenance_lock
+      ORO_MAINTENANCE_LOCK_FILE_PATH: /var/www/oro/var/maintenance/maintenance_lock
+      ORO_MAINTENANCE_LOCK_FOLDER: /var/www/oro/var/maintenance
+      ORO_MQ_DSN: 'dbal:'
+      ORO_MULTIHOST_OPERATION_FOLDER: /var/www/oro/var/multihost
+      ORO_NGINX_HTTP_PORT: "80"
+      ORO_ORGANIZATION_NAME: ORO
+      ORO_PAUSE_SERVICES: php-fpm-app|cron
+      ORO_PG_VER: 17.2-alpine
+      ORO_PHP_FPM_HOST: php-fpm-app
+      ORO_PHP_FPM_PORT: "9000"
+      ORO_RESTART_SERVICES: php-fpm-app|cron|ws
+      ORO_SAMPLE_DATA: "y"
+      ORO_SEARCH_ENGINE_DSN: orm:?prefix=oro_search
+      ORO_SERVER_LOCATION: '{"~ /index\\.php(/|$$)": {"type":"php","fastcgi_param": {"HTTPS": "off"}}, "@rewrite": {"type": "named", "raw_prepend": ["if (-f /var/www/oro/var/maintenance/global_lock) { add_header \"Cache-Control\" \"no-cache\"; return 503; }"]}}'
+      ORO_SESSION_DSN: 'native:'
+      ORO_SITES: '{"oro.demo":{"domain_direct":false,"locations_merge":true}}'
+      ORO_USER_EMAIL: admin@example.com
+      ORO_USER_FIRSTNAME: John
+      ORO_USER_LASTNAME: Doe
+      ORO_USER_NAME: admin
+      ORO_USER_PASSWORD: [REDACTED]
+      ORO_USER_RUNTIME: www-data
+      ORO_WEB_HOST: web
+      ORO_WEBSITE_SEARCH_ENGINE_DSN: orm:?prefix=oro_website_search
+      ORO_WEBSOCKET_BACKEND_DSN: tcp://ws:8080
+      ORO_WEBSOCKET_BACKEND_HOST: ws
+      ORO_WEBSOCKET_BACKEND_PORT: "8080"
+      ORO_WEBSOCKET_FRONTEND_DSN: //*:80/ws
+      ORO_WEBSOCKET_SERVER_DSN: //0.0.0.0:8080
+    image: oroinc/runtime:6.1-latest
+    init: true
+    networks:
+      default: null
+    restart: unless-stopped
+    tmpfs:
+      - /tmp
+    user: www-data
+    volumes:
+      - type: volume
+        source: oro_app
+        target: /var/www/oro
+        volume: {}
+      - type: volume
+        source: cache
+        target: /var/www/oro/var/cache
+        volume: {}
+      - type: volume
+        source: maintenance_folder
+        target: /var/www/oro/var/maintenance
+        volume: {}
+      - type: volume
+        source: public_storage
+        target: /var/www/oro/public/media
+        volume: {}
+      - type: volume
+        source: private_storage
+        target: /var/www/oro/var/data
+        volume: {}
+networks:
+  default:
+    name: docker_default
+volumes:
+  cache:
+    name: docker_cache
+  maintenance_folder:
+    name: docker_maintenance_folder
+  multihost_operation_folder:
+    name: docker_multihost_operation_folder
+  nginx:
+    name: docker_nginx
+  oro_app:
+    name: docker_oro_app
+  private_storage:
+    name: docker_private_storage
+  public_storage:
+    name: docker_public_storage
+
+# exit_code=0

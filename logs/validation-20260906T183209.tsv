@@ -1,0 +1,14 @@
+#	check	verdict	detail
+1	containers running	PASS	all of: db php-fpm-app web ws consumer cron mail
+2	storefront HTTP	PASS	HTTP 200
+3	back-office HTTP	PASS	HTTP 302
+4	postgres pg_isready	PASS	accepting connections
+5	schema (oro_user rows)	PASS	53 rows
+6	consumer process alive	FAIL	no oro:message-queue:consume process in container
+7	queue round trip	MANUAL	oro_message_queue depth=11; create a product in /admin and time its appearance on the storefront
+8	cron definitions + ticking	PASS	38 definitions, cron log active
+9	storefront search (HTTP)	PASS	626570 bytes returned
+10	cache:pool:list	FAIL	Could not open input file: bin/console
+11	redis	EXPECTED-ABSENT	CE: no oro/redis-config bundle; Symfony filesystem cache instead
+12	rabbitmq	EXPECTED-ABSENT	CE: DBAL transport — queue lives in the oro_message_queue table
+13	elasticsearch	EXPECTED-ABSENT	CE: ORM search engine — index lives in Postgres EAV tables

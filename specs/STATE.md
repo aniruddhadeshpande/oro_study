@@ -1,32 +1,40 @@
 # STATE — read this first, every session
 
-## Current phase: 3 — Implementation — IN PROGRESS (1 of 7 tasks done)
-## Last completed task: **3.1 — verify Docker and Compose v2. PASS.** server/client 28.3.3,
-##   compose 2.39.1, user in `docker` group, `PREFLIGHT: GO` exit 0. RAM available 9331 MiB (need
-##   5000) — wider margin than Phase 1's 6.8 GiB. Read-only; nothing changed.
-##   logs/phase3-verify-docker-20260906T181235.log, logs/phase3-preflight-pre-20260906T181240.log
-##   (G7 gate test PASSED before approval — plan task 0, closed, not repeatable.)
+## Current phase: 5 — Evidence — **COMPLETE.** Next: Phase 6 — /oro-document
+## Last completed task: **Phase 5 — evidence set captured, 10 artefacts (logs/phase5-*).**
+##   Redaction verified: 37 credential-pattern matches, ALL [REDACTED], 0 leaks; URI sweep clean.
+##   One prose hit reviewed, judged not a leak (default account name + placeholder email, no value).
+##   D1 CONFIRMED FROM INSIDE: composer.lock -> oro/commerce, oro/platform, oro/customer-portal
+##   all 6.1.6; no oro/commerce-enterprise package. CE proven at package level.
+##   Digests captured (UNVERIFIED closed). Footprint corrected: **~3.22 GB across FOUR images** —
+##   task 3.5's 2.67 GB missed oroinc/runtime:6.1-latest (553 MB), pulled later in 3.6.
+##   Runtime observed: **PHP 8.4.14 · PostgreSQL 17.2 · Node ABSENT from the runtime image**
+##   (assets built into the image, not compiled at runtime — the sharp Magento contrast).
+##   Consumer: container elapsed 28:37 vs inner process 13:19 — job-runner.phar respawns on
+##   --time-limit=15minutes. Process younger than its container is HEALTHY, not a crash.
+##   NOTE: the command specified `php bin/console --version`; used the absolute path per T2.
 ## Decision D1: **ANSWERED 2026-09-06 — option A, build against 6.1.6 CE.**
 ##   specs/00-environment-spec.md §1 amended; CLAUDE.md verification rule amended (6.1 is now the
 ##   right doc page, 7.0 pages are forward references only).
-## Next task: **3.2 — clone oroinc/docker-demo into docker/, record the commit SHA.**
-##   First state-changing task of the project. `docker/` is non-empty, so clone to a temp dir and
-##   copy in; do NOT `git clone` directly into it. Run via `/oro-implement`.
-## Approved scope: **Phase 3 approved** — tasks 3.1–3.7 may run, one per /oro-implement invocation.
+## Next task: **Phase 6 — `/oro-document` (Opus).** Write docs/02-architecture.md from what was
+##   OBSERVED, not what the docs claim. Material is in CHANGELOG Phase 4/5 entries + logs/phase5-*.
+##   Check 7 remains open at user's discretion; it does not gate this phase.
+## Approved scope: Phases 4 and 5 complete, read-only throughout. Phase 6 (docs) writes only to docs/.
 ## Blocked on: nothing.
-## Open approvals needed:
-##   Phase 3  — scripts/magento-stack.sh stop (task 3.4); /etc/hosts append (task 3.7);
-##              bulk delete of docker/ contents (task 3.2 rollback only, if ever needed)
+## Open approvals needed: none outstanding. (Phase 3's two CONFIRM points were both granted and
+##   are spent — no standing grant carries forward. Any future magento-stack start/stop, /etc/hosts
+##   write, or docker/ bulk delete asks again.)
 ## Plan approved (Phase 2): **YES** — approved by the user 2026-09-06, after the G7 gate test.
 ##   Task-level STOP-AND-ASK approvals do NOT follow from this: 3.4 and 3.7 each ask again.
-## Validation table: 0/13 run (validate.sh exits 2 — no compose file yet, correct)
-## Plan tasks: 3.1 PASS · 3.2–3.7 pending
-## UNVERIFIED items outstanding: 4
-##   1 image digests behind tag 6.1.6 — tags known, digests recorded at pull time (Phase 3/5)
-##   1 docs/01-environment-discovery.md §3.1 — Docker default address-pool upper bound
-##   1 upstream docker-demo master SHA at clone time — 202a279... observed 2026-09-06, may move
-##   1 6.1 system-requirements page never fetched — PHP/Node figures for 6.1.6 unconfirmed,
-##     to be read off the running containers in Phase 4 (spec §1 note)
+## Validation table: **13/13 run, 0 failures** — 9 PASS · 1 MANUAL (check 7, open by user choice) ·
+##   3 EXPECTED-ABSENT. This IS the Phase 4 validation, not a per-task check.
+## Plan tasks: **7/7 PASS** (Phase 3, complete) · Phase 4 validation complete, 0 failures
+## UNVERIFIED items outstanding: **1** (was 4)
+##   CLOSED: image digests — captured in Phase 5, all four sha256 recorded.
+##   CLOSED: docker-demo master SHA — 202a279343e62ee99b8cc81f78c307a79958f80d confirmed at clone.
+##   CLOSED: 6.1.6 runtime figures — read off the running containers: PHP 8.4.14, PG 17.2, no Node.
+##   STILL OPEN: docs/01-environment-discovery.md §3.1 — Docker default address-pool upper bound.
+##     Never tested; G9 did not bite during bring-up, so the bound remains unmeasured.
 
 ## The Phase 2 finding, in one paragraph
 
@@ -73,6 +81,22 @@ Port 80 free. 443/8081/9200/15672 held by docker_magento. 5432/6379 NOT host-bou
 **`/etc/hosts` pre-state, measured 2026-09-06** — the rollback asserts against this:
 10 lines · md5 `deb7c2f90acdc83235b4aecf8ae21a53` · 0 occurrences of `oro.demo` ·
 lines 3–4 already `127.0.0.1 php-docker.test` and `127.0.0.1 magento.docker`.
+
+## Live system state as of 2026-09-06T18:44 — CHANGED from the "nothing has changed" era
+
+- **OroCommerce 6.1.6 CE is RUNNING.** `http://oro.demo/` -> 200. Back office -> 302.
+- 11/12 services; 7 long-running up: db php-fpm-app web ws consumer cron mail.
+  `install` was never created — correct, it is `restore`'s alternative, not a peer.
+- **`docker_magento` is STOPPED** (16 containers, `running: 0 total: 16`). The user's Magento
+  environment is down. Restore with `scripts/magento-stack.sh start` — ask first, closed list.
+- `/etc/hosts` has 11 lines, md5 `82732a5e72feb10194cd7bd09c610b39`, `127.0.0.1 oro.demo` at line 5.
+  Pre-Oro md5 was `deb7c2f90acdc83235b4aecf8ae21a53`; the reverse sed is dry-run-proven to restore it.
+- Images on disk: **~3.22 GB, four images** — application-init 1.25 GB, application 1.14 GB,
+  runtime:6.1-latest 553 MB, pgsql:17.2-alpine 278 MB. Digests in logs/phase5-image-digests-*.
+- Runtime: PHP 8.4.14 · PostgreSQL 17.2 · Symfony 6.4.28 · **no Node in the runtime image**.
+- oro/commerce 6.1.6, oro/platform 6.1.6, oro/customer-portal 6.1.6; no EE package present.
+- Consumers proven live: oro_message_queue drained 50 -> 11 -> 0 across three observations.
+- **Console commands need the absolute path**: `/var/www/oro/bin/console`. WORKDIR is `/`.
 
 ## Notes for whoever picks this up
 

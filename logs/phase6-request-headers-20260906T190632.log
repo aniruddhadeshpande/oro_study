@@ -1,0 +1,31 @@
+# capture.sh  phase=6  task=request-headers  utc=2026-09-06T13:36:32Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "== storefront =="; curl -sI http://oro.demo/ | head -12; echo "== back office =="; curl -sI http://oro.demo/admin | head -8; echo "== ws upstream in nginx =="; cd docker && docker compose exec -T web sh -c "grep -rn \"ws\\|8080\" /opt/oro-nginx/etc/sites-available/*.conf 2>/dev/null | head -8"
+
+== storefront ==
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Connection: keep-alive
+Vary: Accept-Encoding
+Cache-Control: max-age=0, must-revalidate, private
+Date: Sun, 06 Sep 2026 13:36:33 GMT
+Permissions-Policy: accelerometer=(), autoplay=(self), battery=(), camera=(), fullscreen=(self), gamepad=(), gyroscope=(), hid=(), idle_detection=(), local_fonts=(), magnetometer=(), microphone=(), midi=(), screen_wake_lock=(), serial=(), usb=(), window_management=()
+X-Content-Type-Options: nosniff
+Link: </build/_static/bundles/orofrontend/default/fonts/Plus_Jakarta_Sans/PlusJakartaSans-variable.woff2?v=3c56ad6a>; rel="preload"; as="font"; crossorigin="anonymous"
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+Expires: Sun, 06 Sep 2026 13:36:33 GMT
+== back office ==
+HTTP/1.1 302 Found
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Cache-Control: max-age=0, must-revalidate, no-cache, no-store, private
+Date: Sun, 06 Sep 2026 13:36:33 GMT
+Location: http://oro.demo/admin/user/login
+Permissions-Policy: accelerometer=(), autoplay=(self), battery=(), camera=(), fullscreen=(self), gamepad=(), gyroscope=(), hid=(), idle_detection=(), local_fonts=(), magnetometer=(), microphone=(), midi=(), screen_wake_lock=(), serial=(), usb=(), window_management=()
+Expires: Sun, 06 Sep 2026 13:36:33 GMT
+== ws upstream in nginx ==
+166:  location =/ws {
+168:    proxy_pass http://ws/;
+
+# exit_code=0

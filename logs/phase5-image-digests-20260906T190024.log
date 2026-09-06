@@ -1,0 +1,10 @@
+# capture.sh  phase=5  task=image-digests  utc=2026-09-06T13:30:24Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: docker images --digests --filter reference=oroinc/* --format {{.Repository}}:{{.Tag}} {{.Digest}} {{.ID}} {{.Size}}
+
+oroinc/orocommerce-application-init:6.1.6 sha256:a053d4aa7024e8f201513cb9db8e97baebb0376b3891c4cf53f5101df74dd7f6 61d0d3bad17a 1.25GB
+oroinc/orocommerce-application:6.1.6 sha256:201f4b6584b258982b866f847f379873100d223196aafe52c750cc3a2a53e9c7 302747e5d1b4 1.14GB
+oroinc/runtime:6.1-latest sha256:95777d7291f3a9856c6b3a559c2e183b00c6053744fdd1adcab3513812db4706 7fd31815357e 553MB
+oroinc/pgsql:17.2-alpine sha256:c0bf3b44ae0db58ecf57319669b6f40eea48e7f639958d602448a8a34c1c6ad0 aa41c4ed60b0 278MB
+
+# exit_code=0

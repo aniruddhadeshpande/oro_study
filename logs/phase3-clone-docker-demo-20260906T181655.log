@@ -1,0 +1,7 @@
+# capture.sh  phase=3  task=clone-docker-demo  utc=2026-09-06T12:46:55Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: git clone --depth 1 https://github.com/oroinc/docker-demo.git /tmp/tmp.030iClXxnO/docker-demo
+
+Cloning into '/tmp/tmp.030iClXxnO/docker-demo'...
+
+# exit_code=0

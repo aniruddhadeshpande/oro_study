@@ -1,0 +1,23 @@
+# capture.sh  phase=3  task=validate-post-application-refixed  utc=2026-09-06T13:03:17Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: scripts/validate.sh
+
+#   CHECK                        VERDICT          DETAIL
+--------------------------------------------------------------------------------------
+1   containers running           PASS             all of: db php-fpm-app web ws consumer cron mail
+2   storefront HTTP              PASS             HTTP 200
+3   back-office HTTP             PASS             HTTP 302
+4   postgres pg_isready          PASS             accepting connections
+5   schema (oro_user rows)       PASS             53 rows
+6   consumer process alive       PASS             2 consume process(es)
+7   queue round trip             MANUAL           oro_message_queue depth=0; create a product in /admin and time its appearance on the storefront
+8   cron definitions + ticking   PASS             38 definitions, cron log active
+9   storefront search (HTTP)     PASS             626546 bytes returned
+10  cache:pool:list              PASS             pools listed
+11  redis                        EXPECTED-ABSENT  CE: no oro/redis-config bundle; Symfony filesystem cache instead
+12  rabbitmq                     EXPECTED-ABSENT  CE: DBAL transport — queue lives in the oro_message_queue table
+13  elasticsearch                EXPECTED-ABSENT  CE: ORM search engine — index lives in Postgres EAV tables
+--------------------------------------------------------------------------------------
+failures: 0   tsv: logs/validation-20260906T183317.tsv
+
+# exit_code=0

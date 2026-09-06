@@ -1,0 +1,18 @@
+# capture.sh  phase=5  task=compose-images  utc=2026-09-06T13:30:24Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker && docker compose images
+
+CONTAINER              REPOSITORY                            TAG                 PLATFORM            IMAGE ID            SIZE                CREATED
+docker-application-1   oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+docker-consumer-1      oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+docker-cron-1          oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+docker-db-1            oroinc/pgsql                          17.2-alpine         linux/amd64         aa41c4ed60b0        278MB               292 years ago
+docker-mail-1          mailhog/mailhog                       latest              linux/amd64         4de68494cd0d        392MB               292 years ago
+docker-php-fpm-app-1   oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+docker-restore-1       oroinc/orocommerce-application-init   6.1.6               linux/amd64         61d0d3bad17a        1.25GB              292 years ago
+docker-volume-init-1   oroinc/orocommerce-application        6.1.6               linux/amd64         302747e5d1b4        1.14GB              292 years ago
+docker-web-1           oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+docker-web-init-1      oroinc/orocommerce-application        6.1.6               linux/amd64         302747e5d1b4        1.14GB              292 years ago
+docker-ws-1            oroinc/runtime                        6.1-latest          linux/amd64         7fd31815357e        553MB               292 years ago
+
+# exit_code=0

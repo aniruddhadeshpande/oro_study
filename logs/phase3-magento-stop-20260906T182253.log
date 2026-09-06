@@ -1,0 +1,9 @@
+# capture.sh  phase=3  task=magento-stop  utc=2026-09-06T12:52:53Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: scripts/magento-stack.sh stop
+
+Stopping 16 containers in project 'docker_magento'.
+Reversible: scripts/magento-stack.sh start. No volumes are touched, no data is removed.
+stopped. running now: 0
+
+# exit_code=0

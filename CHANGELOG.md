@@ -323,3 +323,349 @@ This does not remove task 3.4 — the Oro stack's peak is what matters, and that
 
 No state changed: read-only task, no rollback defined or needed. Evidence:
 `logs/phase3-verify-docker-20260906T181235.log`, `logs/phase3-preflight-pre-20260906T181240.log`.
+
+## 2026-09-06 — Task 3.2 PASS: docker-demo cloned, first state-changing step
+
+**Task 3.2 — clone `oroinc/docker-demo` into `docker/`, record the commit SHA. PASS.**
+
+`docker/` already held `.env.template` and `.gitkeep`, so `git clone` would have refused a
+non-empty target — cloned `--depth 1` to a scratch directory instead and copied the contents in,
+then deleted the scratch clone (outside the repo; `docker/` itself was never touched by the delete).
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| `docker/compose.yaml` exists | yes | yes | PASS |
+| Service count | 12 | 12 | PASS |
+| Services present | all of `db php-fpm-app web ws consumer cron mail volume-init web-init install restore application` | all 12 present | PASS |
+| Commit SHA | 40-hex, `master` HEAD | `202a279343e62ee99b8cc81f78c307a79958f80d` — **matches** the value observed in Phase 2 planning | PASS |
+| `ORO_IMAGE_TAG` | `6.1.6` (the D1 assumption) | `6.1.6` | PASS |
+
+The SHA matching Phase 2's observation means upstream `master` has not moved since 2026-09-06 —
+recorded as fact, not assumed; a different SHA would not have been an error, just a moved upstream.
+
+This closes **G1** (image tags now read from the repo's own file, not only the earlier fetch) and
+**G2** (`ORO_INSTALL_OPTIONS=` confirmed empty in the same file that will actually be used).
+
+`docker/` now also contains a nested `.git/` from the clone. This is intentional and harmless: the
+whole `docker/*` path is gitignored except `.env.template` and `.gitkeep`, so the main repo's git
+never sees or recurses into it — confirmed with `git status --porcelain docker/` returning empty.
+
+**Rollback not needed** — task passed. The CONFIRM-gated bulk-delete rollback
+(`find docker/ -mindepth 1 ! -name .env.template ! -name .gitkeep -delete`) remains defined for a
+future failure but did not run.
+
+Evidence: `logs/phase3-clone-docker-demo-20260906T181655.log`, `logs/phase3-clone-sha-20260906T181702.log`.
+
+## 2026-09-06 — Task 3.3 PASS: docker/.env validated, G12 template header fixed
+
+**Task 3.3 — `docker/.env`: do NOT overwrite it. PASS.**
+
+No copy performed — `docker/.env` (arrived with the clone in 3.2) is upstream's own, complete file
+and is used as-is. The only write was correcting `docker/.env.template`'s misleading header, which
+previously instructed "copy to `docker/.env`" (G12, opened in Phase 2). It now states plainly that
+the file is a reference index only, names the fields overwriting would strip, and points at G12.
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| `ORO_` variable count in `docker/.env` | ≥ 40 | 61 | PASS |
+| `ORO_APP_DOMAIN` | `oro.demo` | `oro.demo` — matches the `/etc/hosts` entry task 3.7 will add | PASS |
+| `docker/.env` gitignored | exits 0 | `git check-ignore -q docker/.env` exit 0 | PASS |
+| `docker compose config` redaction | `[REDACTED]`, no bare password | 42 `[REDACTED]`, 0 bare `ORO_DB_PASSWORD=`/`ORO_DB_ROOT_PASSWORD=`/`ORO_USER_PASSWORD=` values, DSN form (`postgres://orodbuser:[REDACTED]@db:...`) also caught | PASS |
+
+**G12 closed** — the template's own file now states the correct handling, matching what task 3.3
+does. This is the second time in this project that `capture.sh`'s regex redaction has been proven
+against real, not synthetic, credentials (`compose config` renders `ORO_DB_DSN` inline as a URI,
+`ORO_DB_PASSWORD` / `ORO_DB_ROOT_PASSWORD` / `ORO_USER_PASSWORD` as bare `key: value` — both forms
+the redaction patterns target).
+
+**Rollback not needed** — task passed. Defined rollback was `git checkout -- docker/.env.template`;
+`docker/.env` was never touched, so there was nothing to undo there regardless.
+
+Evidence: `logs/phase3-compose-config-20260906T182055.log`.
+
+## 2026-09-06 — Task 3.4 PASS (CONFIRMED): docker_magento stopped
+
+**STOP-AND-ASK.** Asked verbatim per the plan: "Stop the 16 running `docker_magento` containers.
+`docker stop` only — no volume is touched, no data removed, nothing is pruned. Reversible with
+`scripts/magento-stack.sh start`. Your Magento environment is unavailable until then." User confirmed.
+
+**Task 3.4 — preflight, then free the memory. PASS.**
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| Preflight gate before stop | `PREFLIGHT: GO` | `PREFLIGHT: GO` (16 containers up, RAM 9331→ now re-measured) | PASS |
+| `magento-stack.sh status` after stop | `running: 0`, `total: 16` | `running: 0   total: 16` | PASS |
+| Preflight after stop | `GO`, RAM materially above the 6.8 GiB Phase-1 baseline | `PREFLIGHT: GO`, RAM available **9853 MiB** | PASS |
+
+`total: 16` unchanged is the proof nothing was removed — only stopped. `docker_magento` reports
+`stopped` cleanly in preflight rather than the earlier `16 containers up` NOTE.
+
+**Rollback available, not used:** `scripts/magento-stack.sh start` restores all 16; the task passed
+so it did not run.
+
+Evidence: `logs/phase3-preflight-gate-20260906T182246.log`, `logs/phase3-magento-stop-20260906T182253.log`,
+`logs/phase3-magento-status-post-20260906T182309.log`, `logs/phase3-preflight-post-20260906T182309.log`.
+
+## 2026-09-06 — Task 3.5 PASS: images pulled, database restored
+
+**Task 3.5 — `docker compose up restore`. PASS.**
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| Captured exit code | 0 | 0 | PASS |
+| `restore` service state | `exited 0` (correct, not a failure) | `restore exited 0` | PASS |
+| `pg_isready` | `accepting connections` | `/var/run/postgresql:5432 - accepting connections` | PASS |
+| `oro_user` row count | ≥ 1 | **53** | PASS |
+
+Service states after restore: `db running`, `mail running`, `restore exited 0`,
+`volume-init exited 0`. Only four of the twelve services exist at this point — `up restore` starts
+the dependency subgraph `restore` needs, not the application. That is expected; the remaining eight
+arrive with task 3.6.
+
+**G9 did not bite.** No `could not find an available, non-overlapping IPv4 address pool`. The stack
+came up alongside seven pre-existing bridge networks without collision. G9 remains theoretically
+open for the wider bring-up in 3.6, but the pool was not exhausted here.
+
+**G10 closed — image pull measured.** 82 pull-related lines in the captured log; three images
+totalling **~2.67 GB** on disk:
+
+| Image | Size |
+|---|---|
+| `oroinc/orocommerce-application-init:6.1.6` | 1.25 GB |
+| `oroinc/orocommerce-application:6.1.6` | 1.14 GB |
+| `oroinc/pgsql:17.2-alpine` | 278 MB |
+
+Two application images, not one: `-init` is a separate ~1.25 GB image from the runtime application
+image. Against 329 GiB free this is immaterial, but it is now measured rather than assumed.
+`mailhog/mailhog` was already present on the host from the Magento stack, so it did not pull.
+
+**Architectural observation — `oro_message_queue` already holds 50 rows** in the restored database,
+with no consumer running. This is the DBAL transport made visible: the queue is a Postgres table, so
+a restored dump carries queued messages the way it carries any other data. Nothing is draining them
+yet — consumers do not exist until 3.6. Per CLAUDE.md that state is *broken, not partial*, and it
+stays that way until the application comes up.
+
+**Rollback available, not used:** `(cd docker && docker compose down)` — never `down -v`, which is
+on the closed list and would destroy this restore.
+
+Evidence: `logs/phase3-compose-up-restore-20260906T182420.log`,
+`logs/phase3-restore-validate-20260906T182816.log`, `logs/phase3-image-sizes-20260906T182817.log`.
+
+## 2026-09-06 — Task 3.6 PASS: application up, 11/12 services, two harness defects fixed
+
+**Task 3.6 — `docker compose up -d application`. PASS** (after fixing two defects in `validate.sh`).
+
+Detached deliberately: `application` runs `true` and exists only to pull `web`, `consumer` and
+`cron` up through `depends_on`. In the foreground the capture wrapper stays attached to that graph
+and would take the stack down on exit.
+
+Service states — 11 of 12, all 7 long-running services up:
+
+| State | Services |
+|---|---|
+| running | `db` `php-fpm-app` `web` `ws` `consumer` `cron` `mail` |
+| exited 0 (correct) | `application` `restore` `volume-init` `web-init` |
+| never created (correct) | `install` — the alternative to `restore`, not a peer; the restore path does not run it |
+
+**First validation run: `failures: 2`. Both were defects in the checking script, not in Oro.**
+Diagnosed rather than retried, per the one-step-at-a-time rule. Written up as `docs/troubleshooting.md` **T2**.
+
+| Check | Reported | Root cause | Fix |
+|---|---|---|---|
+| 6 consumer process alive | FAIL — "no `oro:message-queue:consume` process" | The demo runs **`oro:message-queue:transport:consume`**; the check grepped the higher-level `oro:message-queue:consume`. Both are real commands; the literal substring cannot match the longer name | `grep -cE 'oro:message-queue:(transport:)?consume'` |
+| 10 cache:pool:list | FAIL — `Could not open input file: bin/console` | Container WORKDIR is `/`, app root is `/var/www/oro`; relative `bin/console` cannot resolve | `ORO_ROOT="${ORO_ROOT:-/var/www/oro}"`, absolute path |
+
+Check 6's false FAIL was the serious one: under this project's rules "no live consumer" means the
+install is **broken**, and the harness was reporting that about a stack with two healthy consumer
+processes. `CLAUDE.md`'s own console-command rule carried the same relative-path error and is
+corrected to `docker compose exec php-fpm-app php /var/www/oro/bin/console <cmd>`.
+
+**Re-run after fixes: `failures: 0`, exit 0.**
+
+| Verdict | Checks |
+|---|---|
+| PASS | 1 containers · 2 storefront HTTP 200 · 3 back-office HTTP 302 · 4 pg_isready · 5 schema 53 rows · 6 **2 consume processes** · 8 38 cron definitions, log active · 9 storefront search 626546 bytes · 10 pools listed |
+| MANUAL | 7 queue round trip — deferred to Phase 4 |
+| EXPECTED-ABSENT | 11 redis · 12 rabbitmq · 13 elasticsearch |
+
+**The consumers are demonstrably working.** `oro_message_queue` depth: **50** rows at restore
+(task 3.5), **11** at the first validation run, **0** at the second. The DBAL transport drained in
+front of the harness — the queue is a Postgres table, and the count falling is the consumer doing
+its job. The stack is no longer "broken" in the CLAUDE.md sense.
+
+Checks 2 and 3 pass via `curl -H 'Host: oro.demo'` against `127.0.0.1`, confirming task 3.7 is
+browser convenience, not a functional dependency.
+
+**Rollback available, not used:** `(cd docker && docker compose stop)`.
+
+Evidence: `logs/phase3-compose-up-application-20260906T183117.log`,
+`logs/phase3-validate-post-application-20260906T183209.log` (the 2-failure run, kept as the record),
+`logs/phase3-validate-post-application-refixed-20260906T183317.log`.
+
+## 2026-09-06 — Task 3.7 PASS (CONFIRMED, run manually): /etc/hosts entry — Phase 3 COMPLETE
+
+**STOP-AND-ASK.** Asked verbatim per the plan; user confirmed.
+
+**Executed by the user, not by the agent.** `sudo` requires a TTY in this session — both the agent's
+Bash tool and the `!` prefix run without one, so `sudo cp` and `sudo tee` failed with
+`a terminal is required to read the password`. No workaround was attempted: an askpass helper or a
+sudoers change is a package/privilege-state change on the closed list, and the correct move was to
+hand the two commands to the user rather than engineer around a password prompt. The user added the
+entry in their own terminal.
+
+**Consequence: the pre-edit backup was never taken.** `/etc/hosts.oro-bak-20260906T183602` does not
+exist, so the planned `diff <(cat backup) /etc/hosts` check could not run.
+
+**This was fully compensated, and the substitute is stronger.** The reverse command and the
+pre-state md5 were both captured *before* the edit
+(`logs/phase3-hosts-reverse-recorded-20260906T183555.log`), so the reverse was dry-run against the
+live file without applying it:
+
+```
+sed '/^127\.0\.0\.1[[:space:]]\+oro\.demo$/d' /etc/hosts | md5sum
+  -> deb7c2f90acdc83235b4aecf8ae21a53   == the recorded pre-state md5
+```
+
+That proves two things a backup-diff would only have suggested: the recorded reverse command
+matches the line **as actually written** (a tab, not spaces — `grep -cE` on the reverse pattern
+returns 1), and the *only* difference between the current file and the pre-state is that single
+line. Rollback is verified, not asserted.
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| `getent hosts oro.demo` | `127.0.0.1 oro.demo` (Phase 1: did not resolve) | `127.0.0.1  oro.demo` | PASS |
+| `wc -l /etc/hosts` | 11 (exactly one more than 10) | 11 | PASS |
+| `oro.demo` occurrences | 1 | 1, at line 5 | PASS |
+| No other change to the file | — | reverse dry-run md5-matches pre-state | PASS |
+| `curl -sI http://oro.demo/` | 200/301/302 | **200** | PASS |
+| `diff` against backup | one added line | **NOT RUN** — backup never taken | SUPERSEDED by the md5 round-trip above |
+
+The line landed at line 5 rather than appended at the end (manual insertion). Functionally
+irrelevant, and the md5 round-trip proves it is the only delta.
+
+**Rollback, still valid and now verified:**
+`sudo sed -i '/^127\.0\.0\.1[[:space:]]\+oro\.demo$/d' /etc/hosts`, asserting
+`md5sum /etc/hosts` returns to `deb7c2f90acdc83235b4aecf8ae21a53`. Must be run by the user — same
+TTY constraint.
+
+**PHASE 3 COMPLETE — 7 of 7 tasks.** 3.1 PASS · 3.2 PASS · 3.3 PASS · 3.4 PASS (CONFIRMED) ·
+3.5 PASS · 3.6 PASS · 3.7 PASS (CONFIRMED, user-executed). OroCommerce 6.1.6 CE is running and
+reachable at `http://oro.demo/`.
+
+## 2026-09-06 — Phase 4 (Validation) COMPLETE: 12/13 PASS/EXPECTED-ABSENT, 1 MANUAL by design
+
+**Full 13-check validation table run.** `scripts/capture.sh 4 validation-table -- scripts/validate.sh`
+→ exit 0, `failures: 0`.
+
+| # | Check | Verdict | Detail |
+|---|---|---|---|
+| 1 | containers running | PASS | all of: db php-fpm-app web ws consumer cron mail |
+| 2 | storefront HTTP | PASS | HTTP 200 |
+| 3 | back-office HTTP | PASS | HTTP 302 |
+| 4 | postgres pg_isready | PASS | accepting connections |
+| 5 | schema (oro_user rows) | PASS | 53 rows |
+| 6 | consumer process alive | PASS | 2 consume process(es) |
+| 7 | queue round trip | **MANUAL** | oro_message_queue depth=0 — see below |
+| 8 | cron definitions + ticking | PASS | 38 definitions, cron log active |
+| 9 | storefront search (HTTP) | PASS | 626534 bytes returned |
+| 10 | cache:pool:list | PASS | pools listed |
+| 11 | redis | EXPECTED-ABSENT | CE: no oro/redis-config bundle; Symfony filesystem cache instead |
+| 12 | rabbitmq | EXPECTED-ABSENT | CE: DBAL transport — queue lives in the oro_message_queue table |
+| 13 | elasticsearch | EXPECTED-ABSENT | CE: ORM search engine — index lives in Postgres EAV tables |
+
+**Check 6 PASS means the install is not broken** — two live `oro:message-queue:transport:consume`
+processes, per the `validate.sh` fix in T2.
+
+**Checks 11–13 EXPECTED-ABSENT are the correct CE outcome, not gaps.** Redis, RabbitMQ and
+Elasticsearch are Enterprise-only; their absence, proven from `compose config --services` rather
+than assumed, is the architectural finding this environment exists to demonstrate. Recorded for
+`docs/02-architecture.md` (Phase 6), not as a failure.
+
+**Check 7 — user decision: left MANUAL, does not block the phase.** The user chose to close Phase 4
+with 12/13 resolved and complete the queue round-trip test (create a product in `/admin`, time its
+storefront appearance, repeat with the consumer stopped to confirm the negative) at their own pace.
+This is explicitly allowed — check 7 is deliberately manual by design, not a validation gap — and it
+does not block Phase 5 (Evidence) or Phase 6 (Docs), which document what has been observed.
+
+**PHASE 4 COMPLETE.** No FAIL anywhere in the table; nothing blocks progression.
+
+Evidence: `logs/phase4-validation-table-20260906T185717.log`,
+`logs/validation-20260906T185717.tsv`.
+
+## 2026-09-06 — Phase 5 (Evidence) COMPLETE: 10 artefacts captured, redaction verified
+
+**Evidence set captured**, each through `scripts/capture.sh 5 <slug>`:
+
+| Artefact | Contents |
+|---|---|
+| `phase5-compose-ps` | running service table |
+| `phase5-compose-services` | the 12 declared services |
+| `phase5-compose-images` | compose's image view |
+| `phase5-image-digests` | **sha256 digests** — closes an `UNVERIFIED:` item |
+| `phase5-console-version` | Symfony 6.4.28 (env: prod, debug: false) |
+| `phase5-oro-package-versions` | `oro/commerce` `oro/platform` `oro/customer-portal` all **6.1.6** |
+| `phase5-runtime-versions` | PHP 8.4.14 · node absent · PostgreSQL 17.2 |
+| `phase5-consumer-processes` | 2 live consume processes with elapsed times |
+| `phase5-oro-version` | application name `oro/commerce-crm-application` |
+| `phase5-validation-table-forward.tsv` | Phase 4 TSV copied forward |
+
+**Deviation from the command as written:** it specifies `php bin/console --version`. That is the
+relative form T2 proved cannot resolve — the container WORKDIR is `/`. Used
+`php /var/www/oro/bin/console --version` per the corrected `CLAUDE.md` rule.
+
+### Image digests — `UNVERIFIED:` closed
+
+| Image | Digest | Size |
+|---|---|---|
+| `oroinc/orocommerce-application-init:6.1.6` | `sha256:a053d4aa7024e8f2…74dd7f6` | 1.25 GB |
+| `oroinc/orocommerce-application:6.1.6` | `sha256:201f4b6584b25898…a53e9c7` | 1.14 GB |
+| `oroinc/runtime:6.1-latest` | `sha256:95777d7291f3a985…2db4706` | 553 MB |
+| `oroinc/pgsql:17.2-alpine` | `sha256:c0bf3b44ae0db58e…c1c6ad0` | 278 MB |
+
+**Correction to the Phase 3 figure.** Task 3.5 recorded ~2.67 GB across three images. A fourth,
+`oroinc/runtime:6.1-latest` (553 MB), was pulled during task 3.6 for the `web` service. The true
+footprint is **~3.22 GB across four images**. The 3.5 number was accurate for the restore step alone
+and is left as written there; this is the total.
+
+### D1 confirmed from inside the running system
+
+`composer.lock` in the running container reports `oro/commerce 6.1.6`, `oro/platform 6.1.6`,
+`oro/customer-portal 6.1.6`. Phase 2's version finding was proven from registries and branches;
+this proves it from the artefact actually executing. No `oro/commerce-enterprise` package — CE
+confirmed at the package level, not only by the absence of EE services.
+
+### Runtime versions — the last `UNVERIFIED:` version item, closed
+
+| Component | 7.0 requirements page (forward reference) | **Observed in 6.1.6** |
+|---|---|---|
+| PHP | ≥ 8.5 | **8.4.14** |
+| PostgreSQL | ≥ 17.6 (CE) | **17.2** |
+| Node.js | ≥ 24.11.0 | **absent from the runtime image** |
+
+The spec's platform table was 7.0's and flagged as a forward reference when §1 was amended. That
+caution is now vindicated on all three rows. Node's absence is the substantive finding: assets are
+built into the image, not compiled at runtime — there is no Node toolchain in the running container
+at all. For a Magento-background reader that is the sharp contrast, where static content deployment
+is routinely an in-place runtime step.
+
+### Consumer evidence
+
+Two live processes. Container elapsed **28:37**, but the inner console process elapsed only
+**13:19** — the `job-runner.phar` wrapper respawns the consumer on `--time-limit=15minutes`
+(with `--memory-limit=1024`). The consumer is designed to die and be restarted; a process age
+shorter than its container is healthy, not a crash symptom.
+
+### Redaction verified
+
+`grep -rniE '(password|secret|token|api[_-]?key)[[:space:]]*[=:][[:space:]]*[^[:space:]]' logs/ --exclude-dir=raw`
+→ **37 matches, all `[REDACTED]`, zero leaked values.** Credential-bearing URI sweep
+(`://user:pass@`): zero non-redacted matches.
+
+**Prose sweep (the T1 / G11 shape the regex cannot catch) — one hit, reviewed and judged not a leak:**
+`logs/phase3-compose-up-restore-*.log:3906` contains
+`Update email admin@example.com for user admin` — upstream container output naming the default
+account and a placeholder domain. No password value, no secret. Recorded here rather than passed
+over silently, since G11 means the mechanical filter is not the last word and prose hits must be
+read by a human eye, not assumed clean.
+
+Evidence: `logs/phase5-*` (10 artefacts).

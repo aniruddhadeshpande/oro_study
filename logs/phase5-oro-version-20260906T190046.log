@@ -1,0 +1,10 @@
+# capture.sh  phase=5  task=oro-version  utc=2026-09-06T13:30:46Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker && docker compose exec -T php-fpm-app sh -c "cat /var/www/oro/composer.json 2>/dev/null | grep -m1 -A0 \"oro/commerce\" ; php /var/www/oro/bin/console oro:platform:update --help 2>&1 | head -3"
+
+  "name": "oro/commerce-crm-application",
+Description:
+  Updates the application state.
+
+
+# exit_code=0

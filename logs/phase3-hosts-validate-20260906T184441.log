@@ -1,0 +1,18 @@
+# capture.sh  phase=3  task=hosts-validate  utc=2026-09-06T13:14:41Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "== getent =="; getent hosts oro.demo; echo "== line count =="; wc -l /etc/hosts; echo "== md5 =="; md5sum /etc/hosts; echo "== oro.demo occurrences =="; grep -c "oro.demo" /etc/hosts; echo "== the line itself =="; grep -n "oro.demo" /etc/hosts; echo "== curl =="; curl -sI -o /dev/null -w "%{http_code}\n" http://oro.demo/
+
+== getent ==
+127.0.0.1       oro.demo
+== line count ==
+11 /etc/hosts
+== md5 ==
+82732a5e72feb10194cd7bd09c610b39  /etc/hosts
+== oro.demo occurrences ==
+1
+== the line itself ==
+5:127.0.0.1	oro.demo
+== curl ==
+200
+
+# exit_code=0

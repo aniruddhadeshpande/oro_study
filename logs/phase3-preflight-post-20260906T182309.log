@@ -1,0 +1,16 @@
+# capture.sh  phase=3  task=preflight-post  utc=2026-09-06T12:53:09Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: scripts/preflight.sh
+
+CHECK                      VALUE                          VERDICT
+----------------------------------------------------------------------------
+docker daemon              28.3.3                         OK
+compose v2                 2.39.1                         OK
+host port 80               free                           OK
+ram available              9853 MiB (need 5000)           OK
+disk free /                329 GiB (need 20)              OK
+docker_magento             stopped                        OK
+----------------------------------------------------------------------------
+PREFLIGHT: GO
+
+# exit_code=0

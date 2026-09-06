@@ -24,7 +24,10 @@ FAILED=0
 declare -a ROWS
 
 dc()   { (cd "$COMPOSE_DIR" && docker compose "$@"); }
-app()  { dc exec -T php-fpm-app php bin/console "$@" 2>&1; }
+# The container WORKDIR is `/`, not the app root — `php bin/console` does not resolve there.
+# The app lives at /var/www/oro (observed 2026-09-06, task 3.6). Absolute path, always.
+ORO_ROOT="${ORO_ROOT:-/var/www/oro}"
+app()  { dc exec -T php-fpm-app php "$ORO_ROOT/bin/console" "$@" 2>&1; }
 psqlq(){ dc exec -T db sh -c "psql -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\" -tAc \"$1\"" 2>&1 | tr -d '[:space:]'; }
 
 record() { # num, name, verdict, detail
@@ -78,9 +81,12 @@ else record 5 "schema (oro_user rows)" FAIL "got: ${N:-<no result>}"; fi
 
 # --- 6. Consumers alive ------------------------------------------------------------------------
 # Not optional in Oro. A stack with no live consumer is a broken install, not a partial one.
-P="$(dc exec -T consumer sh -c 'ps -eo args' 2>/dev/null | grep -c 'oro:message-queue:consume' || true)"
+# The demo runs `oro:message-queue:transport:consume` (the lower-level, per-queue consumer), not
+# the higher-level `oro:message-queue:consume`. Both are real commands; matching only the latter
+# reported a healthy stack as broken (observed 2026-09-06, task 3.6). Match either.
+P="$(dc exec -T consumer sh -c 'ps -eo args' 2>/dev/null | grep -cE 'oro:message-queue:(transport:)?consume' || true)"
 if [ "${P:-0}" -ge 1 ]; then record 6 "consumer process alive" PASS "$P consume process(es)"
-else record 6 "consumer process alive" FAIL "no oro:message-queue:consume process in container"; fi
+else record 6 "consumer process alive" FAIL "no oro:message-queue:[transport:]consume process in container"; fi
 
 # --- 7. Queue drains end to end ----------------------------------------------------------------
 # Depth of the DBAL transport queue table is observable; the create-product round trip is not

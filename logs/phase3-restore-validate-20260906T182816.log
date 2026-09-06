@@ -1,0 +1,17 @@
+# capture.sh  phase=3  task=restore-validate  utc=2026-09-06T12:58:16Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker && echo "== compose ps -a =="; docker compose ps -a --format "{{.Service}} {{.State}} {{.ExitCode}}" | sort; echo "== pg_isready =="; docker compose exec -T db pg_isready; echo "== oro_user rows =="; docker compose exec -T db psql -U orodbuser -d orodb -tAc "select count(*) from oro_user;"; echo "== oro_message_queue rows =="; docker compose exec -T db psql -U orodbuser -d orodb -tAc "select count(*) from oro_message_queue;"
+
+== compose ps -a ==
+db running 0
+mail running 0
+restore exited 0
+volume-init exited 0
+== pg_isready ==
+/var/run/postgresql:5432 - accepting connections
+== oro_user rows ==
+53
+== oro_message_queue rows ==
+50
+
+# exit_code=0

@@ -1,0 +1,9 @@
+# capture.sh  phase=3  task=image-sizes  utc=2026-09-06T12:58:17Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: docker images --filter reference=oroinc/* --format {{.Repository}}:{{.Tag}} {{.Size}} {{.ID}}
+
+oroinc/orocommerce-application-init:6.1.6 1.25GB 61d0d3bad17a
+oroinc/orocommerce-application:6.1.6 1.14GB 302747e5d1b4
+oroinc/pgsql:17.2-alpine 278MB aa41c4ed60b0
+
+# exit_code=0

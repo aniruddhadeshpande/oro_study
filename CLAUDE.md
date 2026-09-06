@@ -51,7 +51,9 @@ fix in `docs/troubleshooting.md`.
 
 **Compose v2.** `docker compose`. Never `docker-compose`.
 
-**Console commands** run inside the container: `docker compose exec php-fpm-app php bin/console <cmd>`
+**Console commands** run inside the container, with an **absolute path** — the container WORKDIR is
+`/`, not the app root, so `php bin/console` does not resolve:
+`docker compose exec php-fpm-app php /var/www/oro/bin/console <cmd>` (verified 2026-09-06, task 3.6)
 
 ## Environment facts (verified 2026-09-06, re-confirm in Phase 1)
 

@@ -1,0 +1,26 @@
+# capture.sh  phase=4  task=check7-queue-roundtrip  utc=2026-09-06T13:35:25Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker
+q() { docker compose exec -T db psql -U orodbuser -d orodb -tAc "select count(*) from oro_message_queue;" | tr -d "[:space:]"; }
+echo "== consumer state before restart =="; docker compose ps -a --format "{{.Service}} {{.State}}" | grep consumer
+echo "== depth with consumer DOWN: $(q) =="
+START=$(date +%s)
+echo "== starting consumer =="; docker compose start consumer >/dev/null 2>&1
+docker compose ps --format "{{.Service}} {{.State}}" | grep consumer
+for i in $(seq 1 30); do
+  D=$(q); NOW=$(date +%s); EL=$((NOW-START))
+  echo "t+${EL}s depth=$D"
+  if [ "$D" = "0" ]; then echo "== DRAINED at t+${EL}s =="; break; fi
+  sleep 5
+done
+
+== consumer state before restart ==
+consumer exited
+== depth with consumer DOWN: 2 ==
+== starting consumer ==
+consumer running
+t+2s depth=2
+t+8s depth=0
+== DRAINED at t+8s ==
+
+# exit_code=0
