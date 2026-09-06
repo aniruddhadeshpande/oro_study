@@ -1,0 +1,11 @@
+# capture.sh  phase=0  task=redaction-selftest  utc=2026-09-06T11:18:51Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# source: stdin
+
+POSTGRES_PASSWORD=[REDACTED]
+ORO_DB_DSN=postgresql://oro_user:[REDACTED]@db:5432/oro
+api-key: [REDACTED]
+Authorization: Bearer [REDACTED]
+ORO_APP_DOMAIN=oro.demo
+
+# exit_code=0

@@ -1,0 +1,18 @@
+# The oroinc/docker-demo clone — upstream repo, not vendored here.
+# Only our template is tracked; the clone is reproduced by scripts/preflight.sh + Phase 3 task 2.
+/docker/*
+!/docker/.env.template
+!/docker/.gitkeep
+
+# Real env files never leave the host. Prime directive 7: no secrets in artefacts.
+.env
+.env.*
+!.env.template
+!docker/.env.template
+
+# Pre-redaction scratch. capture.sh writes here first, then emits the redacted copy to logs/.
+# Redacted logs ARE tracked — evidence is a deliverable (spec Phase 5), not a by-product.
+/logs/raw/
+
+# Editor
+*.code-workspace
