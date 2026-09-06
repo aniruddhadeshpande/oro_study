@@ -1,0 +1,34 @@
+# capture.sh  phase=1  task=docker-storage-networks  utc=2026-09-06T12:00:27Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c docker system df; echo; echo "=== networks ==="; docker network ls; echo; echo "=== subnets in use ==="; docker network inspect $(docker network ls -q) --format "{{.Name}}\t{{range .IPAM.Config}}{{.Subnet}}{{end}}" 2>/dev/null
+
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          21        15        6.9GB     2.708GB (39%)
+Containers      16        16        15.64MB   0B (0%)
+Local Volumes   27        5         1.254GB   673.9MB (53%)
+Build Cache     249       0         1.193GB   1.193GB
+
+=== networks ===
+NETWORK ID     NAME                              DRIVER    SCOPE
+63ea223bfe68   bridge                            bridge    local
+3e8960ae0b51   docker_magento_backend            bridge    local
+d0245630ff6e   docker_magento_frontend           bridge    local
+7da5966a7d93   docker_magento_learning_network   bridge    local
+3a140ac513d5   docker_php_backend                bridge    local
+0fa1f9587af6   host                              host      local
+d7352cca2575   magento_default                   bridge    local
+e814b19f8dba   none                              null      local
+6083cc825670   root_default                      bridge    local
+
+=== subnets in use ===
+bridge\t172.17.0.0/16
+docker_magento_backend\t172.18.0.0/16
+docker_magento_frontend\t172.19.0.0/16
+docker_magento_learning_network\t172.23.0.0/16
+docker_php_backend\t172.20.0.0/16
+host\t
+magento_default\t172.21.0.0/16
+none\t
+root_default\t172.22.0.0/16
+
+# exit_code=0

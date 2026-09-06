@@ -115,3 +115,56 @@ contents of `ORO_INSTALL_OPTIONS`. The last two resolve in Phase 3.
 
 **System state after this entry:** unchanged. No Docker operations, no `/etc/hosts`, Magento stack
 still running with 16 containers.
+
+---
+
+## 2026-09-06 — Phase 1: Environment Discovery
+
+**What changed:** `docs/01-environment-discovery.md` written (new). `specs/STATE.md` rewritten to
+Phase 1 COMPLETE. Twelve evidence logs added under `logs/phase1-*`. No system state altered — every
+command run in this phase was read-only.
+
+**Why:** the specification's Phase 3 was written against a generic host. Three of its assumptions
+needed testing against this machine before a plan could be built on them, and the phase exists to
+turn assumptions into measurements.
+
+**The three assumptions, tested rather than repeated**
+
+| Spec assumption | Result | Consequence |
+|---|---|---|
+| Docker must be installed | **False** — 28.3.3 + Compose v2.39.1 present, user in `docker` group, daemon answers without `sudo` | Phase 3 task 1 becomes a verification (`preflight.sh` GO). No package-state change anywhere in the build |
+| Port 80 may collide | **False** — port 80 unbound. `docker_magento` holds 443/8081/9200/15672 only; 5432 and 6379 are not host-bound at all | No port remapping in `docker/.env`. `ORO_APP_DOMAIN=oro.demo` on :80 as documented |
+| RAM sufficiency assumed | **The binding constraint** — 6.8 GiB available against a ~5 GiB estimated Oro peak, ~1.8 GiB margin, 2 GiB swap unused | `magento-stack.sh stop` moves into the Phase 2 plan as a *step*, not a contingency. Confirmation still required each time |
+
+**Validation**
+
+| Check | Result |
+|---|---|
+| Every findings row traces to a file in `logs/` | PASS — 12 cited slugs, 12 resolve, 0 untraced |
+| Every captured log is cited in the document | PASS — 0 uncited |
+| All Phase 1 commands exited 0 | PASS |
+| `scripts/preflight.sh` | **GO** — daemon OK, compose OK, port 80 free, RAM 7020 MiB (need 5000), disk 328 GiB (need 20), `docker_magento` NOTE |
+| Redaction across tracked `logs/` (excluding `raw/`) | PASS — only `[REDACTED]` matches, and only in the Phase 0 self-test. See caveat below |
+| System state unchanged | PASS — 16 `docker_magento` containers still up, `/etc/hosts` untouched, `docker/` still holds only `.env.template` and `.gitkeep` |
+
+**Findings not anticipated by the spec:** 7 bridge networks occupy 172.17–172.23 consecutively;
+`/etc/hosts` already carries `magento.docker` and `php-docker.test`, so the Oro entry is an append
+in an established idiom; 2.7 GB of images and 1.2 GB of build cache are reclaimable and are **not**
+to be pruned — 328 GiB free removes any argument for touching the closed list.
+
+**Caveat on the redaction result:** it is a pass against a synthetic self-test only. Nothing run in
+Phase 1 emitted a credential, because the credential-bearing command (`docker compose config`) has
+no compose file to read yet. The real test is the first such capture in Phase 3 (G6).
+
+**Gap list:** 9 gaps registered, G1–G9, each naming the phase where it closes. G1/G2 (image tags,
+`ORO_INSTALL_OPTIONS`) close at Phase 3 task 3.2; G4 (real memory footprint) at Phase 4 and it is
+the number Phase 7 should report; G7 (`/oro-implement` refusal path never exercised) is cheapest to
+close immediately after Phase 2 is written.
+
+**Outstanding `UNVERIFIED:`** — 4, up from 3. The three in spec §10 stand. One added: the Docker
+default address-pool upper bound (`/etc/docker/daemon.json` is absent and this Docker version does
+not report the pool in `docker info`, so the remaining /16 slot count is not determinable without
+creating a network — out of scope for a read-only phase). Low risk; recorded because pool exhaustion
+surfaces at `up` time, not `config` time, and is easily misread as a compose-file fault.
+
+**System state after this entry:** unchanged.

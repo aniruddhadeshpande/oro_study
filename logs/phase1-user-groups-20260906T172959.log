@@ -1,0 +1,7 @@
+# capture.sh  phase=1  task=user-groups  utc=2026-09-06T11:59:59Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c id -nG "$USER"
+
+aniruddha sudo users docker
+
+# exit_code=0

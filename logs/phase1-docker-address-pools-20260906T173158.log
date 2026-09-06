@@ -1,0 +1,11 @@
+# capture.sh  phase=1  task=docker-address-pools  utc=2026-09-06T12:01:58Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "=== /etc/docker/daemon.json ==="; cat /etc/docker/daemon.json 2>/dev/null || echo "  (absent — daemon defaults in effect)"; echo; echo "=== docker info | default-address-pools ==="; docker info 2>/dev/null | grep -iA5 "default address pool" || echo "  (not reported by docker info)"
+
+=== /etc/docker/daemon.json ===
+  (absent — daemon defaults in effect)
+
+=== docker info | default-address-pools ===
+  (not reported by docker info)
+
+# exit_code=0

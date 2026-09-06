@@ -1,0 +1,14 @@
+# capture.sh  phase=1  task=resources  utc=2026-09-06T11:59:52Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c nproc; echo; free -h; echo; df -h /
+
+4
+
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       8.7Gi       1.8Gi       573Mi       6.1Gi       6.8Gi
+Swap:          2.0Gi          0B       2.0Gi
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda2       439G   89G  328G  22% /
+
+# exit_code=0

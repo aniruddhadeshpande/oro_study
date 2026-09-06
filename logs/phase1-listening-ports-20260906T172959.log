@@ -1,0 +1,14 @@
+# capture.sh  phase=1  task=listening-ports  utc=2026-09-06T11:59:59Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c ss -lntp 2>/dev/null | grep -E ":(80|443|5432|6379|5672|9200|8081|15672)\b" || echo "NO MATCHES"
+
+LISTEN 0      4096         0.0.0.0:8081       0.0.0.0:*                                    
+LISTEN 0      4096         0.0.0.0:15672      0.0.0.0:*                                    
+LISTEN 0      4096         0.0.0.0:9200       0.0.0.0:*                                    
+LISTEN 0      4096         0.0.0.0:443        0.0.0.0:*                                    
+LISTEN 0      4096            [::]:8081          [::]:*                                    
+LISTEN 0      4096            [::]:15672         [::]:*                                    
+LISTEN 0      4096            [::]:9200          [::]:*                                    
+LISTEN 0      4096            [::]:443           [::]:*                                    
+
+# exit_code=0

@@ -1,0 +1,9 @@
+# capture.sh  phase=1  task=tooling-paths  utc=2026-09-06T11:59:52Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c which docker git curl
+
+/usr/bin/docker
+/usr/bin/git
+/usr/bin/curl
+
+# exit_code=0

@@ -1,0 +1,19 @@
+# capture.sh  phase=1  task=name-resolution  utc=2026-09-06T12:00:27Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "getent hosts oro.demo:"; getent hosts oro.demo || echo "  (no entry — absent)"; echo; echo "/etc/hosts non-comment lines:"; grep -vE "^\s*(#|$)" /etc/hosts
+
+getent hosts oro.demo:
+  (no entry — absent)
+
+/etc/hosts non-comment lines:
+127.0.0.1	localhost
+127.0.1.1	hewlett-HP-Pavilion-Notebook
+127.0.0.1	php-docker.test
+127.0.0.1 	magento.docker
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+# exit_code=0

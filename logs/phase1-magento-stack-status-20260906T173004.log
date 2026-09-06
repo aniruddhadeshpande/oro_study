@@ -1,0 +1,24 @@
+# capture.sh  phase=1  task=magento-stack-status  utc=2026-09-06T12:00:04Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: scripts/magento-stack.sh status
+
+project: docker_magento   running: 16   total: 16
+NAMES                                      STATUS
+docker_magento-newrelic-otel-collector-1   Up 2 hours
+docker_magento-newrelic-infra-1            Up 2 hours
+docker_magento-php-fpm-1                   Up 2 hours (healthy)
+docker_magento-opensearch-exporter-1       Up 2 hours
+docker_magento-varnish-exporter-1          Up 2 hours
+docker_magento-php-fpm-exporter-1          Up 2 hours
+docker_magento-mysql-exporter-1            Up 2 hours
+docker_magento-varnish-1                   Up 2 hours (healthy)
+docker_magento-newrelic-php-daemon-1       Up 2 hours
+docker_magento-phpmyadmin-1                Up 2 hours
+docker_magento-tls-proxy-1                 Up 2 hours (healthy)
+docker_magento-nginx-1                     Up 2 hours (healthy)
+docker_magento-redis-1                     Up 2 hours (healthy)
+docker_magento-mysql-1                     Up 2 hours (healthy)
+docker_magento-opensearch-1                Up 2 hours (healthy)
+docker_magento-rabbitmq-1                  Up 2 hours (healthy)
+
+# exit_code=0

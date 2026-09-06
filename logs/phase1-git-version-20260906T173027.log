@@ -1,0 +1,7 @@
+# capture.sh  phase=1  task=git-version  utc=2026-09-06T12:00:27Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: git --version
+
+git version 2.43.0
+
+# exit_code=0

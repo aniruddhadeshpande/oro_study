@@ -1,0 +1,10 @@
+# capture.sh  phase=1  task=docker-versions  utc=2026-09-06T11:59:59Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c docker --version; docker compose version; echo; docker info --format "Server Version: {{.ServerVersion}}\nStorage Driver: {{.Driver}}\nCgroup: {{.CgroupVersion}}\nCPUs: {{.NCPU}}\nMemTotal: {{.MemTotal}}\nContainers running: {{.ContainersRunning}}"
+
+Docker version 28.3.3, build 980b856
+Docker Compose version v2.39.1
+
+Server Version: 28.3.3\nStorage Driver: overlay2\nCgroup: 2\nCPUs: 4\nMemTotal: 16650260480\nContainers running: 16
+
+# exit_code=0
