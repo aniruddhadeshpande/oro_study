@@ -1,0 +1,23 @@
+# capture.sh  phase=2  task=g7-gate-test-pre  utc=2026-09-06T12:38:26Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "== approval flag =="; grep -n "Plan approved (Phase 2)" specs/STATE.md; echo "== docker/ tracked changes =="; git status --porcelain docker/; echo "(empty above = clean)"; echo "== docker/ contents =="; ls -A docker/; echo "== running containers =="; docker ps -q | wc -l; echo "== magento containers =="; docker ps --filter "label=com.docker.compose.project=docker_magento" -q | wc -l; echo "== oro.demo =="; getent hosts oro.demo || echo "does not resolve"; echo "== /etc/hosts md5 =="; md5sum /etc/hosts
+
+== approval flag ==
+14:##   now      — D1 (version target), then `Plan approved (Phase 2)` below
+17:## Plan approved (Phase 2): NO — /oro-implement must refuse until this reads YES
+87:  file reads `Plan approved (Phase 2): NO` and confirm it refuses and names the gate.
+== docker/ tracked changes ==
+(empty above = clean)
+== docker/ contents ==
+.env.template
+.gitkeep
+== running containers ==
+16
+== magento containers ==
+16
+== oro.demo ==
+does not resolve
+== /etc/hosts md5 ==
+deb7c2f90acdc83235b4aecf8ae21a53  /etc/hosts
+
+# exit_code=0

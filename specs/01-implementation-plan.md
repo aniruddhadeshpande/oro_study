@@ -10,6 +10,12 @@ chore. Tasks marked **CONFIRM** stop and ask, every time, with no standing grant
 
 ## 0. Blocking decision — the target version cannot be met by the chosen path
 
+> **RESOLVED 2026-09-06 — option A.** The user accepted **6.1.6 CE**. `specs/00-environment-spec.md`
+> §1 is amended and `CLAUDE.md`'s verification rule now treats 6.1 as the correct doc line, with 7.0
+> pages usable only as labelled forward references. The analysis below is retained as the record of
+> why. Every task from 3.1 down was written against 6.1.6 already, so none of them changes.
+
+
 This is the finding of Phase 2, and it invalidates part of `specs/00-environment-spec.md` §1.
 
 **Measured this session, read-only:**
@@ -73,6 +79,13 @@ Closes **G7**, the one piece of scaffolding never actually run.
 | **Rollback** | None — nothing is changed. If it *does* change something, that is the finding, and Phase 3 does not start until the command is fixed |
 
 ---
+
+> **RUN 2026-09-06 — PASS.** `/oro-implement` was invoked with the flag at NO. It refused and named the
+> `Plan approved (Phase 2)` line. No task selected, no `capture.sh` call, no writes. Pre/post state blocks
+> byte-identical (`logs/phase2-g7-gate-test-pre-*`, `-post-*`): `docker/` clean and holding only
+> `.env.template` + `.gitkeep`, 16 containers, `oro.demo` unresolved, `/etc/hosts` md5 unchanged,
+> 0 `logs/phase3-*` files, 0 Phase 3 CHANGELOG entries. **G7 closed.** Not repeatable once the flag
+> reads YES.
 
 ## Task 3.1 — verify Docker and Compose v2 (not install)
 

@@ -1,25 +1,32 @@
 # STATE — read this first, every session
 
-## Current phase: 2 — Plan — COMPLETE, awaiting approval
-## Last completed task: Phase 2 — specs/01-implementation-plan.md written. Task 0 + tasks 3.1–3.7,
-##   each with command / validation / rollback. docs/troubleshooting.md created (entry T1).
-## Next task: **user decision D1, then plan approval.** Nothing else runs first.
-##   After both: `/oro-implement` (Phase 3, Sonnet). Task 0 of that phase is the G7 gate test,
-##   which must be run BEFORE the approval flag is flipped.
-## Approved scope for this chunk: Phases 0 → 2. **Reached.** Phase 3 needs fresh approval.
-## Blocked on: **Decision D1 — the target version.** See specs/01-implementation-plan.md §0.
-##   The official Docker demo cannot deliver 7.0 CE; it delivers 6.1.6. Recommendation: accept 6.1.6
-##   (option A) and amend specs/00-environment-spec.md §1. Nothing state-changing until D1 is made.
+## Current phase: 3 — Implementation — IN PROGRESS (1 of 7 tasks done)
+## Last completed task: **3.1 — verify Docker and Compose v2. PASS.** server/client 28.3.3,
+##   compose 2.39.1, user in `docker` group, `PREFLIGHT: GO` exit 0. RAM available 9331 MiB (need
+##   5000) — wider margin than Phase 1's 6.8 GiB. Read-only; nothing changed.
+##   logs/phase3-verify-docker-20260906T181235.log, logs/phase3-preflight-pre-20260906T181240.log
+##   (G7 gate test PASSED before approval — plan task 0, closed, not repeatable.)
+## Decision D1: **ANSWERED 2026-09-06 — option A, build against 6.1.6 CE.**
+##   specs/00-environment-spec.md §1 amended; CLAUDE.md verification rule amended (6.1 is now the
+##   right doc page, 7.0 pages are forward references only).
+## Next task: **3.2 — clone oroinc/docker-demo into docker/, record the commit SHA.**
+##   First state-changing task of the project. `docker/` is non-empty, so clone to a temp dir and
+##   copy in; do NOT `git clone` directly into it. Run via `/oro-implement`.
+## Approved scope: **Phase 3 approved** — tasks 3.1–3.7 may run, one per /oro-implement invocation.
+## Blocked on: nothing.
 ## Open approvals needed:
-##   now      — D1 (version target), then `Plan approved (Phase 2)` below
 ##   Phase 3  — scripts/magento-stack.sh stop (task 3.4); /etc/hosts append (task 3.7);
 ##              bulk delete of docker/ contents (task 3.2 rollback only, if ever needed)
-## Plan approved (Phase 2): NO — /oro-implement must refuse until this reads YES
+## Plan approved (Phase 2): **YES** — approved by the user 2026-09-06, after the G7 gate test.
+##   Task-level STOP-AND-ASK approvals do NOT follow from this: 3.4 and 3.7 each ask again.
 ## Validation table: 0/13 run (validate.sh exits 2 — no compose file yet, correct)
-## UNVERIFIED items outstanding: 3
-##   1 image digests behind tag 6.1.6 — tags now known, digests recorded at pull time (Phase 3/5)
+## Plan tasks: 3.1 PASS · 3.2–3.7 pending
+## UNVERIFIED items outstanding: 4
+##   1 image digests behind tag 6.1.6 — tags known, digests recorded at pull time (Phase 3/5)
 ##   1 docs/01-environment-discovery.md §3.1 — Docker default address-pool upper bound
 ##   1 upstream docker-demo master SHA at clone time — 202a279... observed 2026-09-06, may move
+##   1 6.1 system-requirements page never fetched — PHP/Node figures for 6.1.6 unconfirmed,
+##     to be read off the running containers in Phase 4 (spec §1 note)
 
 ## The Phase 2 finding, in one paragraph
 
@@ -83,5 +90,8 @@ lines 3–4 already `127.0.0.1 php-docker.test` and `127.0.0.1 magento.docker`.
   `docs/troubleshooting.md` T1 and G11. Machine output can be trusted to the filter; a captured
   documentation page must be read before it is committed.
 - G6 is **closed**: redaction now proven against real credential-bearing output, not a self-test.
-- G7 is still untested and is task 0 of the implementation plan — run `/oro-implement` while this
-  file reads `Plan approved (Phase 2): NO` and confirm it refuses and names the gate.
+- G7 is **closed** — the gate test ran and passed; see "Last completed task" above. The refusal
+  path is now the only part of the scaffolding proven to hold under a live invocation, and it can
+  never be re-tested in this repo once the flag reads YES.
+- **The target is 6.1.6, not 7.0.** A 6.1 doc page is the correct page. 7.0 material is a forward
+  reference and must be labelled as such — see the amended verification rule in CLAUDE.md.

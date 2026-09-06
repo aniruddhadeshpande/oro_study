@@ -1,0 +1,23 @@
+# capture.sh  phase=2  task=g7-gate-test-post  utc=2026-09-06T12:38:41Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c echo "== docker/ tracked changes =="; git status --porcelain docker/; echo "(empty above = clean)"; echo "== docker/ contents =="; ls -A docker/; echo "== running containers =="; docker ps -q | wc -l; echo "== magento containers =="; docker ps --filter "label=com.docker.compose.project=docker_magento" -q | wc -l; echo "== oro.demo =="; getent hosts oro.demo || echo "does not resolve"; echo "== /etc/hosts md5 =="; md5sum /etc/hosts; echo "== phase-3 logs written =="; ls logs/phase3-* 2>/dev/null | wc -l; echo "== CHANGELOG phase 3 entries =="; grep -c "^## Phase 3" CHANGELOG.md || true
+
+== docker/ tracked changes ==
+(empty above = clean)
+== docker/ contents ==
+.env.template
+.gitkeep
+== running containers ==
+16
+== magento containers ==
+16
+== oro.demo ==
+does not resolve
+== /etc/hosts md5 ==
+deb7c2f90acdc83235b4aecf8ae21a53  /etc/hosts
+== phase-3 logs written ==
+0
+== CHANGELOG phase 3 entries ==
+0
+
+# exit_code=0

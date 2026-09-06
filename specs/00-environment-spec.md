@@ -11,24 +11,36 @@ writing: no Oro stack exists, `docker/` holds only `.env.template`.
 
 ## 1. Target
 
+**Amended 2026-09-06 (Decision D1).** This section originally targeted 7.0 LTS. Phase 2 proved that
+target unreachable by the chosen install path and the user selected option A — build against 6.1.6.
+The evidence and the three options are in `specs/01-implementation-plan.md` §0; the summary is that
+`oroinc/docker-demo` has no 7.0 branch and no tags, its `master` pins `ORO_IMAGE_TAG=6.1.6`, and
+Docker Hub has never carried a 7.0 `orocommerce-application` image. The 7.0 documentation page
+(banner confirmed) instructs a bare clone of that same `master`.
+
 | Item | Value |
 |---|---|
 | Product | OroCommerce |
-| Version | **7.0 LTS** |
+| Version | **6.1.6** — pinned by `docker-demo` `master:.env` as `ORO_IMAGE_TAG` |
 | Edition | **Community Edition** |
-| Released | March 2026 |
-| Supported until | March 2030 (March 2032 with Extended Coverage) |
-| CE patch window | **March 2027** — 12 months after release |
+| Runtime baseline | `ORO_BASELINE_VERSION=6.1-latest` |
+| PostgreSQL | `ORO_DB_VERSION=17.2` (image-supplied) |
+| CE patch window | **closed March 2026** — accepted; local, HTTP-only, non-production |
+| Current LTS (not used) | 7.0, released March 2026, supported to March 2030 (2032 Extended) |
 | Dev branch | 7.1 |
 | Release cadence | One LTS every March |
 
-Confirmed this session against `https://doc.oroinc.com/community/release-process/`. The current LTS
-is 7.0, which **matches the target** — the spec's "report the discrepancy and ask" branch does not
-apply, and no escalation is needed.
+The release-process facts were confirmed this session against
+`https://doc.oroinc.com/community/release-process/`. They are kept because they are the reason the
+discrepancy is a documentation-versus-artefact gap rather than a mistake in this spec: Oro publishes
+7.0 documentation over a 6.1 demo distribution.
 
-The CE patch window matters more than it looks: patches for 7.0 CE stop in **March 2027**, twelve
-months after release, while the same version carries EE support to 2030. On a real engagement that
-gap is the argument for EE, not the feature matrix.
+**Why 6.1.6 does not weaken the learning objectives.** CE is CE across the line: the message queue
+runs on the DBAL transport into the `oro_message_queue` table, search runs on the ORM engine into
+Postgres EAV, Elasticsearch / RabbitMQ / `oro/redis-config` remain EE-only, and the twelve-service
+topology and request path are unchanged. Every architectural claim this repo sets out to observe is
+observable on 6.1.6. What is lost is the patch window, and on a box with no TLS, no inbound exposure
+and no real data, that is a stated acceptance rather than a risk to manage.
 
 ### Platform requirements (fetched this session, `doc.oroinc.com/backend/setup/system-requirements/`)
 
@@ -43,6 +55,13 @@ gap is the argument for EE, not the feature matrix.
 | Redis | >= 8.4, **optional** | "more efficient application caching" |
 | Elasticsearch | >= 9.2 < 10.0 | **Enterprise Edition only** |
 | RabbitMQ | >= 4.2 | **Enterprise Edition only** |
+
+**These are 7.0's requirements, not 6.1.6's.** The page carries the 7.0 banner and the
+no-version-prefix URL resolves to the current LTS. They are retained as the forward reference; the
+figures that actually govern this build come from the images themselves, and where the two are known
+to diverge the observed value wins — upstream `.env` pins PostgreSQL **17.2**, not 17.6.
+`UNVERIFIED:` the 6.1 system-requirements page was not fetched; PHP and Node figures for 6.1.6 are
+unconfirmed and will be read off the running containers in Phase 4.
 
 These are satisfied inside the official images; none of them is installed on the host. They are
 recorded because they define what the containers are, and because the PHP figure contradicts this

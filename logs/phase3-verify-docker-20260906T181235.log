@@ -1,0 +1,9 @@
+# capture.sh  phase=3  task=verify-docker  utc=2026-09-06T12:42:35Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c docker version --format "server={{.Server.Version}} client={{.Client.Version}}"; docker compose version --short; id -nG
+
+server=28.3.3 client=28.3.3
+2.39.1
+aniruddha sudo users docker
+
+# exit_code=0

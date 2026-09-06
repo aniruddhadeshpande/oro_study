@@ -242,3 +242,84 @@ clone-time SHA.
 
 **System state after this entry:** unchanged. 16 `docker_magento` containers running, `oro.demo`
 does not resolve, `docker/` holds `.env.template` and `.gitkeep`, port 80 free.
+
+## 2026-09-06 — Decision D1 resolved · G7 gate test PASS
+
+**What changed and why.** Phase 2 ended blocked on D1: the spec targeted 7.0 LTS CE, but the chosen
+install path cannot deliver it — `oroinc/docker-demo` has no 7.0 branch and no tags, its `master`
+pins `ORO_IMAGE_TAG=6.1.6`, and Docker Hub has never carried a 7.0 `orocommerce-application` image.
+The user selected **option A: build against 6.1.6 CE**.
+
+Three artefacts amended as a consequence:
+
+| File | Change |
+|---|---|
+| `specs/00-environment-spec.md` §1 | Target rewritten 7.0 LTS → **6.1.6 CE**, with the D1 rationale, the accepted expired-patch-window caveat, and a note that the platform-requirements table is 7.0's and therefore a forward reference (upstream pins PG **17.2**, not 17.6) |
+| `CLAUDE.md` verification rule | **6.1 is now the correct doc line**; 5.0/5.1/6.0 are wrong pages; 7.0 pages readable but must be labelled forward references, never asserted about the running system |
+| `specs/01-implementation-plan.md` §0 | Marked RESOLVED — option A. Tasks 3.1–3.7 were written against 6.1.6 already, so none changes |
+
+**Why this is not a downgrade of the learning objectives.** CE is CE across the line: DBAL
+message-queue transport into `oro_message_queue`, ORM search engine into Postgres EAV,
+Elasticsearch / RabbitMQ / `oro/redis-config` still EE-only, the same 12-service topology and
+request path. What is lost is the CE patch window, which closed for 6.1 in March 2026 — accepted
+explicitly for a local, HTTP-only, non-production box with no real data.
+
+**G7 gate test — PASS (plan task 0).** `/oro-implement` invoked while the `Plan approved (Phase 2)` line in `specs/STATE.md` read
+`Plan approved (Phase 2): NO`. It refused and named that line as the unmet gate. No task selected,
+no `capture.sh` invocation, no writes.
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| Refusal names the unmet gate | yes | the `Plan approved (Phase 2)` line, then :17 | PASS |
+| `git status --porcelain docker/` | empty | empty | PASS |
+| `docker/` contents | `.env.template` `.gitkeep` | same | PASS |
+| Running containers | 16 | 16 | PASS |
+| `docker_magento` containers | 16 | 16 | PASS |
+| `getent hosts oro.demo` | no resolution | does not resolve | PASS |
+| `/etc/hosts` md5 | `deb7c2f90acdc83235b4aecf8ae21a53` | unchanged | PASS |
+| `logs/phase3-*` written | 0 | 0 | PASS |
+| Phase 3 CHANGELOG entries | 0 | 0 | PASS |
+| Pre vs post state block | identical | byte-identical | PASS |
+
+Evidence: `logs/phase2-g7-gate-test-pre-20260906T180825.log`,
+`logs/phase2-g7-gate-test-post-20260906T180841.log`.
+
+**G7 closed** — and it is the one scaffolding check that cannot be re-run in this repo, because it
+only exists while the approval flag reads NO.
+
+**Gaps:** G7 closed. G1–G3, G6 closed earlier in Phase 2. Open: G4, G5 (Phase 4), G8 (Phase 6),
+G9 (first `up`), G10 (image pull size), G11 (prose-credential redaction), G12 (documented, fixed in
+plan task 3.3).
+
+**`UNVERIFIED:` 3 → 4** — the 6.1 system-requirements page was never fetched, so the PHP and Node
+figures for 6.1.6 are unconfirmed and will be read off the running containers in Phase 4.
+
+**State unchanged.** Nothing on the system has been modified through the end of Phase 2.
+
+## 2026-09-06 — Phase 3 begins · plan approved · task 3.1 PASS
+
+**Plan approved.** `specs/STATE.md` now records `Plan approved (Phase 2): YES`, approved by the user
+after the G7 gate test passed. Task-level STOP-AND-ASK approvals do **not** follow from it: tasks 3.4
+(`magento-stack.sh stop`) and 3.7 (`/etc/hosts` append) each ask again at their own time.
+
+**Task 3.1 — verify Docker and Compose v2 (not install). PASS.**
+
+Re-run rather than carried from Phase 1, because the verification rule is session-scoped.
+
+| Assertion | Expected | Observed | Result |
+|---|---|---|---|
+| Docker daemon reachable | server responds | server 28.3.3, client 28.3.3 | PASS |
+| Compose short version | begins `2.` | `2.39.1` | PASS |
+| User in `docker` group | `docker` in `id -nG` | `aniruddha sudo users docker` | PASS |
+| `preflight.sh` verdict | `PREFLIGHT: GO`, exit 0 | `PREFLIGHT: GO`, exit 0 | PASS |
+
+Preflight detail: port 80 free · RAM available **9331 MiB** against a 5000 MiB requirement · 328 GiB
+free on `/` · `docker_magento` 16 containers up (NOTE, not a failure).
+
+**Headroom is better than Phase 1 measured** — 9331 MiB now against 6.8 GiB then, on the same host
+with the same 16 Magento containers running. Phase 1's figure was the pessimistic one; the binding
+constraint is still memory, but the margin over the 5 GiB requirement is wider than planned for.
+This does not remove task 3.4 — the Oro stack's peak is what matters, and that is still unmeasured.
+
+No state changed: read-only task, no rollback defined or needed. Evidence:
+`logs/phase3-verify-docker-20260906T181235.log`, `logs/phase3-preflight-pre-20260906T181240.log`.

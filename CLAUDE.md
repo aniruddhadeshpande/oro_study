@@ -30,8 +30,11 @@ Ask in plain terms, state what is destroyed and what the rollback is, then wait.
 
 **Verification.** Any URL, version number, diagram link, or command not fetched or executed in this
 session is prefixed `UNVERIFIED:` wherever it is written. Never emit a plausible-looking Oro doc URL.
-Check the version banner on every doc page — this repo targets **7.0 LTS CE**; a page showing 5.1 or
-6.1 is the wrong page.
+Check the version banner on every doc page. **The build target is 6.1.6 CE** (Decision D1,
+2026-09-06 — `specs/01-implementation-plan.md` §0: no 7.0 CE image exists). So **6.1 is the right
+page** and a page showing 5.0/5.1/6.0 is the wrong one. 7.0 pages are still worth reading — Oro
+documents 7.0 over a 6.1 distribution — but anything read there is a forward reference and must be
+labelled as such, never asserted about the running system.
 
 **Secrets.** No credential *value* in `docs/`, `runbook/`, `logs/`, `CHANGELOG.md`, or a commit.
 Reference the variable name. `scripts/capture.sh` redacts mechanically; do not bypass it.
