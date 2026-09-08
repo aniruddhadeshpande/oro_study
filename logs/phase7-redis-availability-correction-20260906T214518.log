@@ -1,0 +1,38 @@
+# capture.sh  phase=7  task=redis-availability-correction  utc=2026-09-06T16:15:18Z
+# host=hewlett-HP-Pavilion-Notebook  cwd=/home/aniruddha/Projects/oro_study
+# command: bash -c cd docker
+echo "== RedisConfigBundle in CE platform tree =="
+docker compose exec -T -w /var/www/oro php-fpm-app ls vendor/oro/platform/src/Oro/Bundle/RedisConfigBundle
+echo "== self-registration =="
+docker compose exec -T -w /var/www/oro php-fpm-app cat vendor/oro/platform/src/Oro/Bundle/RedisConfigBundle/Resources/config/oro/bundles.yml
+echo "== present in COMPILED kernel =="
+docker compose exec -T -w /var/www/oro php-fpm-app sh -c "grep -c OroRedisConfigBundle var/cache/prod/bundles.php"
+echo "== predis + redis extension =="
+docker compose exec -T -w /var/www/oro php-fpm-app sh -c "ls -d vendor/predis; php -m | grep -i redis"
+echo "== CONTRAST: amqp / elasticsearch genuinely absent =="
+docker compose exec -T -w /var/www/oro php-fpm-app sh -c "ls vendor/oro/platform/src/Oro/Component/MessageQueue/Transport/ | tr \"\n\" \" \"; echo; ls -d vendor/php-amqplib vendor/enqueue vendor/elasticsearch vendor/ruflin 2>/dev/null || echo NONE-PRESENT; php -m | grep -i amqp || echo no-amqp-extension"
+
+== RedisConfigBundle in CE platform tree ==
+DependencyInjection
+Factory
+OroRedisConfigBundle.php
+Predis
+Provider
+README.md
+Resources
+Session
+Tests
+== self-registration ==
+bundles:
+  - { name: Oro\Bundle\RedisConfigBundle\OroRedisConfigBundle, priority: -210 }
+== present in COMPILED kernel ==
+1
+== predis + redis extension ==
+vendor/predis
+redis
+== CONTRAST: amqp / elasticsearch genuinely absent ==
+ConnectionInterface.php Dbal DsnBasedParameters.php Exception MessageConsumerInterface.php MessageInterface.php Message.php MessageProducerInterface.php QueueCollection.php QueueInterface.php Queue.php SessionInterface.php 
+NONE-PRESENT
+no-amqp-extension
+
+# exit_code=0

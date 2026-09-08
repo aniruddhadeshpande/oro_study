@@ -186,3 +186,51 @@ the value in the restored demo dataset. It ships that way in
 non-representative. It is documented because a reader who runs a reindex will see this error and
 needs to know it is inherited, expected, and harmless here — and because it is a useful reminder
 that "reindex finished" and "reindex was clean" are different claims (see T4).
+
+---
+
+## T7 — I documented "Redis is Enterprise-only". It is not.
+
+**Post-Phase-7, 2026-09-06.** Found while browsing the codebase: `RedisConfigBundle` appears in
+`vendor/oro/platform/src/Oro/Bundle/` — in a Community Edition install that four documents said
+could not have Redis.
+
+**The wrong claim,** which appeared in `docs/02-architecture.md`, `docs/04-magento-mapping.md`, the
+runbook (§0 ledger, §4, §9, §14, §22) and `scripts/validate.sh` check 11:
+
+> CE: no `oro/redis-config` bundle; Symfony filesystem cache instead
+
+**What is actually true, verified:**
+
+| Evidence | Result |
+|---|---|
+| Bundle source in CE `oro/platform` | present |
+| `Resources/config/oro/bundles.yml` | self-registers, `priority: -210` |
+| Compiled kernel `var/cache/prod/bundles.php` | **contains `OroRedisConfigBundle`** |
+| `predis` vendor package | present |
+| `redis` PHP extension | loaded |
+| `config:dump-reference OroRedisConfigBundle` | extension `oro_redis_config` **resolves** — the bundle is live |
+
+Redis is absent from this environment because **the demo compose file declares no `redis` service
+and sets no DSN** — a topology choice, not an edition boundary.
+
+**Root cause of the error:** I inferred the edition boundary from the *absence of a running service*
+and then asserted it about the *codebase*, without ever looking at the codebase. `compose config
+--services` proves what is deployed; it says nothing about what is available. Checks 11–13 were
+correctly written to prove absence-in-this-stack, and I over-read them into a licensing claim.
+
+**The same test, applied to the other two — and they hold:**
+
+| Claim | Verified how | Verdict |
+|---|---|---|
+| RabbitMQ is EE-only | `MessageQueue/Transport/` contains **only** `Dbal`; no `php-amqplib`, no `enqueue`, no `amqp` PHP extension | **correct** |
+| Elasticsearch is EE-only | no `elasticsearch`/`ruflin` client package, no Oro Elasticsearch bundle | **correct** |
+
+**Consequence beyond the fix.** `docs/04` used Redis as one of three pillars of the "why buy EE"
+argument. That pillar was false and is removed: the argument now rests on RabbitMQ and
+Elasticsearch, which are genuine codebase-level boundaries. A CE deployment can run Redis for cache
+and sessions, which also means **scaling the web tier out is a configuration exercise on CE, not a
+licence purchase** — the opposite of what the runbook previously implied.
+
+**Rule this establishes:** an absent *service* proves a deployment choice. Only an absent *package*
+proves an edition boundary. Check the vendor tree before writing the word "Enterprise".

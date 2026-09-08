@@ -1,26 +1,31 @@
 # STATE — read this first, every session
 
-## Current phase: 6 — Documentation — **COMPLETE.** Next: Phase 7 — /oro-summary (FINAL)
-## Last completed task: **Phase 6 — docs written + check 7 CLOSED by experiment.**
-##   GATE NOTE: /oro-document refuses on any UNRUN Phase 4 check. Check 7 was unrun (user had left
-##   it MANUAL before that gate was in view), so it was RUN rather than waived — no browser needed;
-##   stop/start consumer is not on the closed list.
-##   **Check 7 PASS by experiment**: consumer stopped -> depth 1, held 45s -> depth 2, NOTHING
-##   drained; consumer started -> depth 0 at t+8s. Drain bound <8s. Both directions proven.
-##   validate.sh still prints MANUAL for 7 by design (a script cannot self-assess an experiment).
-##   Docs: 02-architecture.md (285L), 03-request-flow.md (155L), 04-magento-mapping.md (164L),
-##   troubleshooting.md (188L, T1-T6). NO doc URLs emitted at all -> no UNVERIFIED markers needed.
-##   New troubleshooting entries T4 (reindex reports success while doing nothing), T5 (dead
-##   consumer invisible to every check — only 3 of 12 services healthchecked), T6 (vendor demo
-##   data defect: oro_sale_quote.poNumber wrong type — non-blocking, deliberately NOT fixed).
-##   logs/phase4-check7-queue-roundtrip-*, phase4-validation-table-final-*, phase6-*
+## Current phase: 7 — Summary — **COMPLETE.** ***WORKFLOW COMPLETE — Phases 0 through 7.***
+## Last completed task: **Phase 7 — runbook updated + final report emitted.**
+##   runbook 554 -> 682 lines. Version basis corrected 7.0 LTS -> 6.1.6 CE. §0 verification ledger
+##   added (all 22 sections marked VERIFIED / PARTIAL / UNVERIFIED with basis). Per-section banners
+##   on §3, §8-§10, §12-§17, §19, §20. **106 UNVERIFIED: markers** — every doc.oroinc.com and
+##   github.com/oroinc URL marked EXCEPT the two with capture-log proof (release-process,
+##   demo-environment/docker). EE material (RabbitMQ/Redis/Elasticsearch) and OroCloud/Deploy/
+##   Scaling/HA/Security are UNVERIFIED in full — a single-host CE demo cannot demonstrate them.
 ## Decision D1: **ANSWERED 2026-09-06 — option A, build against 6.1.6 CE.**
 ##   specs/00-environment-spec.md §1 amended; CLAUDE.md verification rule amended (6.1 is now the
 ##   right doc page, 7.0 pages are forward references only).
-## Next task: **Phase 7 — `/oro-summary` (Opus). FINAL PHASE.** Update the runbook and emit the
-##   final report. All 13 validation checks are now run; nothing is outstanding.
-## Approved scope: Phases 4-6 complete. Phase 7 (summary) writes runbook/ and the final report.
+## Next task: **none — the 8-phase workflow is complete.** The environment is running and
+##   documented. Optional follow-ons, none of them gated: run the `install` path in a second
+##   checkout to observe the lifecycle (learning-plan 1.3); build a real dev environment (source
+##   install — needs PHP/Node/PNPM, package-state changes on the CLOSED LIST, plan it properly);
+##   restart docker_magento when Oro is no longer needed (ASK FIRST — closed list).
+## Approved scope: all phases complete. Any further work is a NEW scope needing fresh approval.
 ## Blocked on: nothing.
+## CORRECTION on record (2026-09-06, post-Phase-7): **"Redis is Enterprise-only" was WRONG.**
+##   RedisConfigBundle ships in CE oro/platform, self-registers (bundles.yml, priority -210), and IS
+##   in this install's compiled kernel; predis + redis PHP extension present. Absent here only
+##   because the demo declares no redis service/DSN. RabbitMQ and Elasticsearch ARE genuine edition
+##   boundaries (verified: only Transport/Dbal, no amqp/ES packages or extensions).
+##   Fixed in validate.sh check 11, docs/02 §4, docs/04 (3 places), runbook (5 places), T7.
+##   RULE: an absent service proves a deployment choice; only an absent PACKAGE proves an edition
+##   boundary. Check the vendor tree before writing "Enterprise".
 ## Open approvals needed: none outstanding. (Phase 3's two CONFIRM points were both granted and
 ##   are spent — no standing grant carries forward. Any future magento-stack start/stop, /etc/hosts
 ##   write, or docker/ bulk delete asks again.)

@@ -745,3 +745,81 @@ environment non-representative.
   `service_started` — no boot races, no sleep loops. Cost: only 3 of 12 services are healthchecked.
 
 **PHASE 6 COMPLETE.** All Phase 4 checks run, none failing.
+
+## 2026-09-06 — Phase 7 (Summary) COMPLETE — WORKFLOW COMPLETE
+
+**Runbook updated:** `runbook/oro-commerce-architecture-runbook.md`, 554 → 682 lines.
+
+| Change | Detail |
+|---|---|
+| Version basis corrected | Header said "OroCommerce 7.0 LTS". Now **6.1.6 CE** with the D1 rationale and the observed runtime (PHP 8.4.14, PG 17.2, Symfony 6.4.28, no Node) |
+| §0 Verification ledger added | Every one of the 22 sections marked VERIFIED / PARTIAL / `UNVERIFIED:` with its basis |
+| Per-section banners | Inserted on §3, §8, §9, §10, §12–§17, §19, §20 |
+| §1 factual corrections | "PHP >= 8.4 for 7.0, Symfony 7.4" was wrong on both counts; DB claim now carries the observed 17.2 |
+| §19 invocation corrected | Absolute path `/var/www/oro/bin/console`; the `consume` vs `transport:consume` distinction called out |
+| URL discipline | **106 `UNVERIFIED:` markers.** Every `doc.oroinc.com` / `github.com/oroinc` URL is marked except the **two** with capture-log proof |
+
+**The honest outcome, stated plainly:** most of the OroCloud (§12), Deployment (§13), Scaling (§14),
+HA (§15) and Security (§16) material is `UNVERIFIED:` in full, and RabbitMQ (§8) and Redis (§9) and
+Elasticsearch (§10) are `UNVERIFIED:` because they are Enterprise Edition and cannot exist in this
+stack. A single-host CE demo cannot demonstrate them, and marking them was the point of the phase.
+
+**Only 2 of ~30 documentation URLs had fetch evidence** — `community/release-process/` and
+`backend/setup/demo-environment/docker/`. Both showed banner "7.0 (latest)", which is how the D1
+discrepancy was found in the first place.
+
+**Final report emitted** in the required sections: Installation Status · Architecture Summary ·
+Container Summary · Important Commands · Known Issues · Troubleshooting · Documentation Links ·
+Architecture Diagram Links · Next HLD Topics · Next LLD Topics.
+
+**Final state:** 7 long-running services up, 4 one-shot `Exited (0)` (correct), queue depth 0,
+storefront 200. 53 capture logs, 5 validation TSVs, 7 documents. 13/13 validation checks run,
+0 failures.
+
+**WORKFLOW COMPLETE — Phases 0 through 7.**
+
+## 2026-09-06 — CORRECTION: "Redis is Enterprise-only" was wrong
+
+Found post-Phase-7 while browsing the codebase: `RedisConfigBundle` is present in
+`vendor/oro/platform/src/Oro/Bundle/` — in a Community Edition install that four artefacts claimed
+could not have Redis.
+
+**The claim was wrong.** Verified:
+
+| Evidence | Result |
+|---|---|
+| Bundle source in CE `oro/platform` | present |
+| `Resources/config/oro/bundles.yml` | self-registers, `priority: -210` |
+| Compiled kernel `var/cache/prod/bundles.php` | **contains `OroRedisConfigBundle`** |
+| `predis` vendor package · `redis` PHP extension | both present |
+| `config:dump-reference OroRedisConfigBundle` | extension `oro_redis_config` resolves — bundle is live |
+
+Redis is absent here because the demo compose file declares **no `redis` service and no DSN** — a
+topology choice, not an edition boundary.
+
+**Root cause of my error:** I inferred an edition boundary from the absence of a *running service*
+and asserted it about the *codebase*, without looking at the codebase. `compose config --services`
+proves what is deployed and says nothing about what is available. Validation checks 11–13 were
+correctly scoped to absence-in-this-stack; I over-read them into a licensing claim.
+
+**The same test applied to the other two — both hold:**
+
+| Claim | Verified how | Verdict |
+|---|---|---|
+| RabbitMQ EE-only | `MessageQueue/Transport/` contains only `Dbal`; no `php-amqplib`, no `enqueue`, no `amqp` extension | **correct** |
+| Elasticsearch EE-only | no `elasticsearch`/`ruflin` client, no Oro ES bundle | **correct** |
+
+**Corrected in five places:** `scripts/validate.sh` (check 11 detail), `docs/02-architecture.md` §4,
+`docs/04-magento-mapping.md` (§4 table, §4 body, §6 summary), the runbook (§0 ledger, §4 table, §9
+banner, §14, §22), and `docs/troubleshooting.md` **T7**.
+
+**Consequence beyond the wording.** `docs/04` used Redis as one of three pillars of the "why buy EE"
+argument. That pillar was false and is removed; the argument now rests on RabbitMQ and Elasticsearch,
+which are genuine codebase-level boundaries. It also inverts a conclusion: **scaling the web tier out
+is a configuration exercise on CE, not a licence purchase** — the runbook previously implied the
+opposite.
+
+**Rule established:** an absent *service* proves a deployment choice; only an absent *package* proves
+an edition boundary. Check the vendor tree before writing "Enterprise".
+
+Evidence: `logs/phase7-redis-availability-correction-20260906T214518.log`.

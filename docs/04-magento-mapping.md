@@ -88,7 +88,7 @@ factor of two.
 | Oro (observed) | Magento | Mark |
 |---|---|---|
 | Symfony filesystem cache in the **shared `cache` volume** | `var/cache` filesystem backend | **similar** |
-| Redis | Redis, near-universal for cache + session | **different** — `oro/redis-config` is EE-only |
+| Redis | Redis, near-universal for cache + session | **similar — available, just not wired here** (see correction below) |
 | `ORO_SESSION_DSN=native:` — PHP handler, local files | Redis or DB sessions, standard | **different** |
 | `cache:pool:list` → `cache.app`, `cache.system`, `cache.validator`, `cache.serializer`, `oro.cache.serializer_pool` | `cache:clean` / cache types grid | **similar** |
 
@@ -97,11 +97,18 @@ mount the same `cache` volume at `/var/www/oro/var/cache`. A cache entry invalid
 is therefore visible to php-fpm — coherence via shared filesystem rather than a shared cache server.
 It works precisely because every writer is on one host.
 
-That is also the hard ceiling. Scaling the web tier out requires a shared cache backend
-(`oro/redis-config`, EE) **and** a shared session store (`native:` sessions are local files). In
-Magento you would reach for Redis on day one and never think about it; here the single-host
-assumption is baked into the CE topology. For a solution architect this is the concrete answer to
-"why would I buy EE" — more useful than any feature matrix.
+That is also the ceiling *as configured*. Scaling the web tier out requires a shared cache backend
+and a shared session store (`native:` sessions are local files).
+
+**Correction (2026-09-06).** An earlier draft listed Redis among the reasons to buy EE. **That was
+wrong**, and it materially weakened the argument it was making. `RedisConfigBundle` ships in CE
+`oro/platform`, auto-registers via `bundles.yml`, and is in this install's compiled kernel;
+`predis` and the `redis` PHP extension are installed. The demo simply declares no `redis` service
+and sets no DSN. A CE deployment can use Redis for cache and sessions.
+
+The EE argument therefore rests on **RabbitMQ and Elasticsearch**, both of which are genuinely
+absent from the CE codebase — no AMQP package or extension, no Elasticsearch client or bundle, only
+`Transport/Dbal` in the message-queue tree. Those two are edition boundaries. Redis is not.
 
 ---
 
@@ -158,7 +165,9 @@ concepts, the general shape of a DB-backed queue, Symfony DI if you know Magento
 **Does not transfer.**
 - MySQL habits — Postgres is load-bearing here, not a substitution.
 - "Elasticsearch is mandatory" — false in Oro CE, and its absence is correct.
-- "Redis for cache and sessions" — EE-only; the CE design assumes one host.
+- "Redis for cache and sessions" — available in CE (bundle ships and is kernel-registered), but **not
+  wired in this demo**, which falls back to a shared filesystem cache volume. Configure it before
+  assuming it is there.
 - One search index — there are two, with independent lifecycles.
 - Scope-as-permissions — the ownership tree is a different axis from Magento's scope hierarchy, and
   conflating them is the most expensive mistake available in this list.

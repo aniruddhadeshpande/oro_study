@@ -195,8 +195,16 @@ storefront and admin search are the same index with different query paths.
 **The cache is a shared volume, and that is how CE survives without Redis.** `php-fpm-app`,
 `consumer` and `cron` all mount the same `cache` volume at `/var/www/oro/var/cache`. A cache
 invalidated by the consumer is therefore visible to php-fpm. It works because every writer is on one
-host. It is also the hard blocker on scaling out: a second host would need `oro/redis-config`, which
-is EE.
+host. It is also the blocker on scaling out: a second host needs a shared cache backend.
+
+**Correction (2026-09-06):** an earlier draft of this document said `oro/redis-config` is Enterprise
+only. **That is wrong.** `RedisConfigBundle` ships in CE `oro/platform`, self-registers via its
+`Resources/config/oro/bundles.yml` (priority -210), and **is present in this install's compiled
+kernel** — `predis` and the `redis` PHP extension are both installed too. Redis is absent here
+because the *demo topology* declares no `redis` service and configures no DSN, not because the
+edition forbids it. Contrast with RabbitMQ and Elasticsearch, which are genuinely EE-only: the
+message-queue tree contains only `Transport/Dbal`, with no AMQP package or extension anywhere, and
+there is no Elasticsearch client library or bundle at all.
 
 **Sessions are `native:` — local files.** With one `php-fpm-app` container this is invisible. It
 makes horizontal scaling of the web tier impossible without changing it first.

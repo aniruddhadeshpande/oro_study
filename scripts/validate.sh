@@ -122,7 +122,7 @@ if has_service redis; then
   O="$(dc exec -T redis redis-cli ping 2>&1)"
   [ "$O" = "PONG" ] && record 11 "redis" PASS "PONG" || record 11 "redis" FAIL "$O"
 else
-  record 11 "redis" EXPECTED-ABSENT "CE: no oro/redis-config bundle; Symfony filesystem cache instead"
+  record 11 "redis" EXPECTED-ABSENT "no redis service in the demo topology; falls back to Symfony filesystem cache. NOTE: RedisConfigBundle IS present and kernel-registered in CE — absence here is a demo choice, not an edition limit"
 fi
 
 if has_service rabbitmq || has_service mq; then
